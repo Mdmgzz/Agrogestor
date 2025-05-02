@@ -13,3 +13,4 @@ back-agrogestor/storage/*.key
 .DS_Store
 *.log
 .env
+ 
