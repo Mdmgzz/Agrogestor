@@ -1,0 +1,15 @@
+# Laravel
+/back-agrogestor/vendor/
+/back-agrogestor/.env
+/back-agrogestor/node_modules/
+back-agrogestor/storage/*.key
+
+# Angular
+/front-agrogestor/node_modules/
+/front-agrogestor/dist/
+/front-agrogestor/.angular/cache/
+
+# General
+.DS_Store
+*.log
+.env
