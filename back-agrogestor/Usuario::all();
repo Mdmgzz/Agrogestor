@@ -1,0 +1,11 @@
+[90m= [39m[34;4mApp\Models\Usuario[39;24m {#5303
+    [34mnombre[39m: "[32mAdmin[39m",
+    [34mapellidos[39m: "[32mRoot[39m",
+    [34mcorreo[39m: "[32madmin@local[39m",
+    [34mcontrasena[39m: "[32m$2y$12$FQuBYB5Il52DlXrof65fiOq4zvNq0qgkOYrBQ9jPPZ8sXJF8E1VSC[39m",
+    [34mrol[39m: "[32mADMINISTRADOR[39m",
+    [34mupdated_at[39m: "[32m2025-05-16 23:42:21[39m",
+    [34mcreated_at[39m: "[32m2025-05-16 23:42:21[39m",
+    [34mid[39m: [35m1[39m,
+  }
+

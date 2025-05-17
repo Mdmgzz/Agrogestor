@@ -16,7 +16,7 @@ class AuthController extends Controller
             'apellidos'  => 'required|string|max:100',
             'correo'     => 'required|email|unique:usuarios,correo',
             'contrasena' => 'required|string|min:6',
-            'rol_id'     => 'required|exists:roles,id',
+            'rol'        => 'sometimes|required|in:ADMINISTRADOR,TECNICO_AGRICOLA,INSPECTOR',
         ]);
 
         $data['contrasena'] = Hash::make($data['contrasena']);

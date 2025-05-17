@@ -2,47 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cultivo;
 use Illuminate\Http\Request;
 
 class CultivoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return Cultivo::with('parcela')->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'parcela_id'   => 'required|exists:parcelas,id',
+            'variedad'     => 'required|string|max:100',
+            'fecha_siembra'=> 'required|date',
+        ]);
+
+        return Cultivo::create($data);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Cultivo $cultivo)
     {
-        //
+        return $cultivo->load('parcela');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Cultivo $cultivo)
     {
-        //
+        $data = $request->validate([
+            'parcela_id'   => 'sometimes|required|exists:parcelas,id',
+            'variedad'     => 'sometimes|required|string|max:100',
+            'fecha_siembra'=> 'sometimes|required|date',
+        ]);
+
+        $cultivo->update($data);
+        return $cultivo;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Cultivo $cultivo)
     {
-        //
+        $cultivo->delete();
+        return response()->noContent();
     }
 }

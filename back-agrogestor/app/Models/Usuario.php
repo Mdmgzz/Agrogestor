@@ -2,39 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;                    // <— para createToken()
+use Illuminate\Foundation\Auth\User as Authenticatable; // <— para el guard de auth
+use Illuminate\Notifications\Notifiable;               // <— si quieres notificaciones
+use Illuminate\Database\Eloquent\Factories\HasFactory; // <— si usas factories
 
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-    // 1) Indicar la tabla (no siempre necesario)
+    use HasApiTokens, HasFactory, Notifiable;
+
     protected $table = 'usuarios';
 
-    // 2) Columnas que podemos asignar en masa
     protected $fillable = [
         'nombre',
         'apellidos',
         'correo',
         'contrasena',
-        'rol_id',
+        'rol',
     ];
 
-    // 3) Relación con Roles → Usuario pertenece a un Rol
-    public function role()
+    /**
+     * Hash de la contraseña al asignarla
+     */
+    public function setContrasenaAttribute($value)
     {
-        // belongsTo(ModelDestino, 'clave_foranea_en_esta_tabla')
-        return $this->belongsTo(Role::class, 'rol_id');
+        $this->attributes['contrasena'] = bcrypt($value);
     }
 
-    // 4) Relación con Parcelas → Usuario tiene muchas Parcelas
-    public function parcelas()
-    {
-        // hasMany(ModelDestino, 'clave_foranea_en_el_modelo_destino')
-        return $this->hasMany(Parcela::class, 'usuario_id');
-    }
-
-    // 5) Relación con Actividades → Usuario registra muchas Actividades
-    public function actividades()
-    {
-        return $this->hasMany(Actividad::class, 'usuario_id');
-    }
+    // Relaciones...
+    public function parcelas()    { return $this->hasMany(Parcela::class, 'usuario_id'); }
+    public function actividades() { return $this->hasMany(Actividad::class, 'usuario_id'); }
 }

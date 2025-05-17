@@ -2,47 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Adjunto;
 use Illuminate\Http\Request;
 
 class AdjuntoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return Adjunto::with('actividad')->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'actividad_id'=> 'required|exists:actividades,id',
+            'ruta_archivo'=> 'required|string|max:255',
+            'tipo_archivo'=> 'required|in:imagen,documento',
+        ]);
+
+        return Adjunto::create($data);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Adjunto $adjunto)
     {
-        //
+        return $adjunto->load('actividad');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Adjunto $adjunto)
     {
-        //
+        $data = $request->validate([
+            'actividad_id'=> 'sometimes|required|exists:actividades,id',
+            'ruta_archivo'=> 'sometimes|required|string|max:255',
+            'tipo_archivo'=> 'sometimes|required|in:imagen,documento',
+        ]);
+
+        $adjunto->update($data);
+        return $adjunto;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Adjunto $adjunto)
     {
-        //
+        $adjunto->delete();
+        return response()->noContent();
     }
 }
