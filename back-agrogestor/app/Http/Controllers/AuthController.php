@@ -19,7 +19,7 @@ class AuthController extends Controller
             'rol'        => 'sometimes|required|in:ADMINISTRADOR,TECNICO_AGRICOLA,INSPECTOR',
         ]);
 
-        $data['contrasena'] = Hash::make($data['contrasena']);
+        //$data['contrasena'] = Hash::make($data['contrasena']);
         $user = Usuario::create($data);
         $token = $user->createToken('api_token')->plainTextToken;
 
