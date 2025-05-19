@@ -13,32 +13,33 @@ use App\Http\Controllers\AdjuntoController;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Aquí definimos las rutas para tu API REST. Todo lo que pongas aquí
-| se cargará bajo el prefijo /api y usando el middleware 'api'.
+| Prefijo /api aplicado automáticamente y middleware 'api' por defecto.
 |
 */
 
-// 1) Rutas públicas de autenticación
-Route::post('register', [AuthController::class, 'register']); // Registro de usuario
-Route::post('login',    [AuthController::class, 'login']);    // Login y obtención de token
+// 1) Login público: cualquiera puede autenticarse y obtener su token
+Route::post('login', [AuthController::class, 'login']);
 
-// 2) Rutas protegidas por token Sanctum
+// 2) Grupo protegido con Sanctum: todas estas rutas requieren Bearer Token válido
 Route::middleware('auth:sanctum')->group(function () {
-    //Logout
+    // 2.1) Registro: solo ADMINISTRADOR (el chequeo de rol se hace en el método)
+    Route::post('register', [AuthController::class, 'register']);
+
+    // 2.2) Logout del usuario autenticado
     Route::post('logout', [AuthController::class, 'logout']);
 
-    //CRUD Usuarios
+    // 2.3) CRUD completo de Usuarios
     Route::apiResource('usuarios', UserController::class);
 
-    //CRUD Parcelas
+    // 2.4) CRUD de Parcelas
     Route::apiResource('parcelas', ParcelaController::class);
 
-    //CRUD Cultivos
+    // 2.5) CRUD de Cultivos
     Route::apiResource('cultivos', CultivoController::class);
 
-    //CRUD Actividades
+    // 2.6) CRUD de Actividades
     Route::apiResource('actividades', ActividadController::class);
 
-    //CRUD Adjuntos
+    // 2.7) CRUD de Adjuntos
     Route::apiResource('adjuntos', AdjuntoController::class);
 });

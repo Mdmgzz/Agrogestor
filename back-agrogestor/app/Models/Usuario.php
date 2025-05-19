@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Laravel\Sanctum\HasApiTokens;                    // <— para createToken()
-use Illuminate\Foundation\Auth\User as Authenticatable; // <— para el guard de auth
-use Illuminate\Notifications\Notifiable;               // <— si quieres notificaciones
-use Illuminate\Database\Eloquent\Factories\HasFactory; // <— si usas factories
+use Laravel\Sanctum\HasApiTokens;                    
+use Illuminate\Foundation\Auth\User as Authenticatable; 
+use Illuminate\Notifications\Notifiable;               
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 
 class Usuario extends Authenticatable
 {
