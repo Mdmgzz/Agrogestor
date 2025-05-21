@@ -19,7 +19,7 @@
           "options": {
             "outputPath": "dist/front-agrogestor",
             "index": "src/index.html",
-            "browser": "src/main.ts",
+            "browser": "src/main.ts",                   
             "polyfills": [
               "zone.js"
             ],
@@ -32,14 +32,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles-tailwind.css"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -96,12 +91,15 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles-tailwind.css"
             ],
             "scripts": []
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
