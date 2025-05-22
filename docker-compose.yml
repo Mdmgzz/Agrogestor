@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: agrogestor
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - agro_net
+
+  backend:
+    build:
+      context: back-agrogestor
+      dockerfile: Dockerfile
+    volumes:
+      - ./back-agrogestor:/var/www/html
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    networks:
+      - agro_net
+
+    # ---- ESTO ES NUEVO ----
+    entrypoint: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
+  frontend:
+    build:
+      context: front-agrogestor
+      dockerfile: Dockerfile
+    volumes:
+      - ./front-agrogestor:/usr/src/app
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+    networks:
+      - agro_net
+
+volumes:
+  db_data:
+
+networks:
+  agro_net:
+    driver: bridge
