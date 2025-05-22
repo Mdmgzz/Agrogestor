@@ -1,0 +1,45 @@
+<!-- src/app/features/landing/footer/footer.component.html -->
+<footer class="bg-primary text-white pt-10 pb-6">
+  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Logo + breve descripción -->
+    <div>
+      <img src="/assets/LogoAgrogestor.png" alt="Logo Agrogestor" class="h-10 mb-4" />
+      <p class="text-sm text-white/80">
+        La solución para digitalizar tus explotaciones agrícolas, hoy.
+      </p>
+    </div>
+
+    <!-- Enlaces -->
+    <div class="space-y-2">
+      <h4 class="font-semibold mb-2">Enlaces</h4>
+      <ul class="space-y-1 text-sm">
+        <li><a href="#" class="hover:underline">Sobre nosotros</a></li>
+        <li><a href="#" class="hover:underline">Política de Privacidad</a></li>
+        <li><a href="#" class="hover:underline">Términos de Servicio</a></li>
+        <li><a href="#" class="hover:underline">Ayuda / FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- Newsletter -->
+    <div>
+      <h4 class="font-semibold mb-2">Suscríbete</h4>
+      <form class="flex flex-col sm:flex-row gap-2">
+        <input
+          type="email"
+          placeholder="Tu correo"
+          class="px-4 py-2 rounded-lg text-black flex-1"
+        />
+        <button
+          type="submit"
+          class="px-4 py-2 bg-accent hover:bg-accent/90 text-primary font-semibold rounded-lg transition"
+        >
+          Enviar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center text-sm text-white/70">
+    &copy; 2025 Agrogestor. Todos los derechos reservados.
+  </div>
+</footer>

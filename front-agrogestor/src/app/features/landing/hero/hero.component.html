@@ -1,0 +1,39 @@
+<!-- src/app/features/landing/hero/hero.component.html -->
+<section
+  class="relative min-h-screen flex flex-col justify-center items-center text-center
+         px-4 py-12 space-y-6
+         bg-gradient-to-br from-primary/40 via-secondary/400 to-bg-main"
+>
+  <!-- Capa suave para textura -->
+  <div class="absolute inset-0 bg-white/5"></div>
+
+  <div class="relative max-w-2xl space-y-4">
+    <img
+      src="/assets/Agrogestor_sinTexto.png"
+      alt="Agrogestor logo"
+      class="mx-auto h-24 w-auto"
+    />
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-primary">Agrogestor</h1>
+    <p class="text-xl lg:text-2xl font-medium text-secondary">
+      Tus tierras en tu bolsillo
+    </p>
+    <p class="text-lg text-primary/80 ">
+      Gestiona parcelas, cultivos y actividades desde cualquier lugar, con datos seguros y en tiempo real.
+    </p>
+  </div>
+
+  <div class="relative flex flex-col sm:flex-row gap-4">
+    <a
+      routerLink="/register"
+      class="px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition"
+    >
+      Comenzar ahora
+    </a>
+    <a
+      routerLink="/login"
+      class="px-6 py-3 border-2 border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition"
+    >
+      Ya tengo cuenta
+    </a>
+  </div>
+</section>
