@@ -8,10 +8,10 @@ use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\AdjuntoController;
 
 // 1) Login público
-Route::post('login', [AuthController::class, 'login']);        // → POST /api/login
+Route::post('login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('user',     [AuthController::class,'me']);        // → GET /api/user
-    Route::post('logout',  [AuthController::class,'logout']);    // → POST /api/logout
+    Route::get('user',     [AuthController::class,'me']);        
+    Route::post('logout',  [AuthController::class,'logout']);    
     Route::post('register',[AuthController::class, 'register']);
 
     Route::apiResource('usuarios',     UserController::class);

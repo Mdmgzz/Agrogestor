@@ -42,26 +42,26 @@ class AuthController extends Controller
      * POST /api/login
      */
  public function login(Request $req)
-{
-    $creds = $req->validate([
-        'correo'     => 'required|email',
-        'contrasena' => 'required|string',
-    ]);
+    {
+        $data = $req->validate([
+            'correo'     => 'required|email',
+            'contrasena' => 'required|string',
+        ]);
 
-    if (! Auth::attempt([
-        'correo'     => $creds['correo'],
-        'password' => $creds['contrasena'],
-    ])) {
-        return response()->json(['message'=>'Credenciales inválidas es aqui'], 401);
+        $user = Usuario::where('correo', $data['correo'])->first();
+        if (! $user || ! Hash::check($data['contrasena'], $user->contrasena)) {
+            return response()->json(['message' => 'Credenciales inválidas'], 401);
+        }
+
+        // Creamos token personal
+        $token = $user->createToken('api_token')->plainTextToken;
+
+        // Devolvemos user + token
+        return response()->json([
+            'user'  => $user,
+            'token' => $token,
+        ]);
     }
-
-    $req->session()->regenerate();
-
-    return response()->json([
-      'user'  => $req->user(),
-      'token' => $req->user()->createToken('api_token')->plainTextToken
-    ]);
-}
 
     public function me(Request $req)
     {

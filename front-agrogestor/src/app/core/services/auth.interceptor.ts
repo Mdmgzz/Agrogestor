@@ -3,24 +3,21 @@ import { Injectable } from '@angular/core';
 import {
   HttpInterceptor,
   HttpRequest,
-  HttpHandler,
-  HttpEvent
+  HttpHandler
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    // Clonamos la petición para añadir withCredentials y Accept
-    const authReq = req.clone({
-      withCredentials: true,
-      setHeaders: {
-        Accept: 'application/json'
-      }
-    });
-    return next.handle(authReq);
+  constructor(private auth: AuthService) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
+    const token = this.auth.getToken();
+    if (token) {
+      req = req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` }
+      });
+    }
+    return next.handle(req);
   }
 }

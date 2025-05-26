@@ -1,37 +1,38 @@
+// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { switchMap, Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { tap, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface LoginPayload { correo: string; contrasena: string; }
-export interface User         { /* tus campos */ }
+export interface AuthResponse { user: any; token: string; }
+export interface User { id: number; name: string; correo: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private base = 'http://localhost:8000';
+  private base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  login(payload: { correo: string; contrasena: string }) {
-  return this.http
-    .get<void>(`${this.base}/sanctum/csrf-cookie`, { withCredentials: true })
-    .pipe(
-      switchMap(() =>
-        this.http.post<{ user: User; token: string }>(
-          `${this.base}/api/login`,
-          payload,                // { correo, contrasena }
-          { withCredentials: true }
-        )
-      )
-    );
-}
-  me(): Observable<User> {
-    return this.http.get<User>(
-      `${this.base}/api/user`,
-      { withCredentials: true }
+  login(payload: LoginPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.base}/api/login`,
+      payload
+    ).pipe(
+      tap(res => localStorage.setItem('api_token', res.token))
     );
   }
 
   logout() {
-    return this.http.post(`${this.base}/api/logout`, {}, { withCredentials: true });
+    localStorage.removeItem('api_token');
+    // opcional: llamar a backend logout si tienes tokens revocados
+  }
+
+  me(): Observable<User> {
+    return this.http.get<User>(`${this.base}/api/user`);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('api_token');
   }
 }
