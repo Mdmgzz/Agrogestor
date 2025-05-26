@@ -1,11 +1,13 @@
 // src/app/core/services/auth.guard.ts
-import { Injectable }                        from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CanActivate,
   Router,
   UrlTree
 } from '@angular/router';
-import { AuthService }                       from './auth.service';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
@@ -14,13 +16,14 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(): boolean | UrlTree {
-    // Si el usuario está logueado, permitimos la navegación
-    if ( this.auth.isLoggedIn() ) {
-      return true;
-    }
-
-    // Si no, redirigimos al login
-    return this.router.createUrlTree(['/login']);
+  canActivate(): Observable<boolean | UrlTree> {
+    // Llamamos a /api/user para verificar si hay sesión activa
+    return this.auth.me().pipe(
+      map(() => true), // Si responde con un usuario, dejamos pasar
+      catchError(() =>
+        // Si da error (no autenticado), redirigimos a login
+        of(this.router.createUrlTree(['/login']))
+      )
+    );
   }
 }

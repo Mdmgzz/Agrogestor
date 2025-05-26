@@ -1,26 +1,29 @@
-import { bootstrapApplication }                   from '@angular/platform-browser';
-import {provideHttpClient,withInterceptorsFromDi} from '@angular/common/http';
-import { HTTP_INTERCEPTORS }                      from '@angular/common/http';
-import { provideRouter }                          from '@angular/router';
+// src/main.ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter }          from '@angular/router';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withXsrfConfiguration
+}                                 from '@angular/common/http';
+import { HTTP_INTERCEPTORS }      from '@angular/common/http';
 
-import { AppComponent }                           from './app/app.component';
-import { routes }                                 from './app/core/routes/app.routes';
-import { AuthInterceptor }                        from './app/core/services/auth.interceptor';
+import { AppComponent }           from './app/app.component';
+import { routes }                 from './app/core/routes/app.routes';
+import { AuthInterceptor }        from './app/core/services/auth.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    // 1) Registra HttpClient y usa interceptores que hayas añadido via DI
-    provideHttpClient(withInterceptorsFromDi()),
-
-    // 2) Registra tu interceptor custom
+    provideHttpClient(
+      // Angular leerá la cookie XSRF-TOKEN y la pondrá en el header X-XSRF-TOKEN
+      withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
+      withInterceptorsFromDi()
+    ),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
     },
-
-    // 3) Configura el router con tus rutas
     provideRouter(routes)
   ]
-})
-.catch(err => console.error(err));
+}).catch(err => console.error(err));

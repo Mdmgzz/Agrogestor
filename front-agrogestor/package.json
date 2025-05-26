@@ -2,7 +2,7 @@
   "name": "front-agrogestor",
   "version": "0.0.0",
   "scripts": {
-    "build:css": "npx tailwindcss -i src/styles.scss -o src/styles-tailwind.css --content \"src/**/*.{html,ts}\"",
+    "build:css": "npx tailwindcss -i src/styles.scss -o src/styles-tailwind.css --content \"src/**/*.{html,ts}\" --watch",
     "start": "npm run build:css && ng serve --open",
     "build": "npm run build:css && ng build",
     "watch": "npm run build:css && ng build --watch --configuration development",

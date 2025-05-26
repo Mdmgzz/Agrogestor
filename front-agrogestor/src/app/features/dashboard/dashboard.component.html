@@ -1,1 +1,32 @@
-<p>dashboard works!</p>
+<div class="min-h-screen bg-bg-main flex flex-col">
+  <!-- Navbar interna -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <a
+        routerLink="/dashboard"
+        [class.text-primary]="currentRoute === '/dashboard'"
+        class="font-semibold hover:text-primary transition"
+      >
+        Inicio
+      </a>
+      <a
+        routerLink="/dashboard/parcelas"
+        [class.text-primary]="currentRoute === '/dashboard/parcelas'"
+        class="font-semibold hover:text-primary transition"
+      >
+        Parcelas
+      </a>
+    </div>
+    <button
+      (click)="logout()"
+      class="text-red-600 hover:text-red-800 font-medium transition"
+    >
+      Cerrar sesión
+    </button>
+  </nav>
+
+  <!-- Contenido -->
+  <main class="flex-1 p-6">
+    <router-outlet></router-outlet>
+  </main>
+</div>

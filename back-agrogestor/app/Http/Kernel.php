@@ -6,17 +6,9 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
-    /**
-     * Global HTTP middleware stack.
-     * Se ejecutan en TODA petición, incluso antes de resolver rutas.
-     *
-     * @var array<int, class-string|string>
-     */
     protected $middleware = [
-        // 1) Nuestro Cors personalizado intercepta TODO (incluyendo OPTIONS)
-        \App\Http\Middleware\Cors::class,
-
-        // 2) Middlewares de Laravel por defecto
+        // Cors global si quieres (HandleCors lee config/cors.php)
+        \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
@@ -24,41 +16,37 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
-    /**
-     * Grupos de middleware.
-     *
-     * @var array<string, array<int, class-string|string>>
-     */
     protected $middlewareGroups = [
         'web' => [
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
-        'api' => [
-            'throttle:api',                                    // Límite de peticiones
-            \Illuminate\Routing\Middleware\SubstituteBindings::class, // Route Model Binding
-        ],
+       'api' => [
+        // 1) Para encriptar y encolar cookies en TODAS las respuestas API
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+
+        // 2) Arranca la sesión PHP (sin esto no hay session store)
+        \Illuminate\Session\Middleware\StartSession::class,
+
+        // 3) Sanctum “stateful” para tus rutas SPA
+        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+
+        // 4) CSRF: valida el header X-XSRF-TOKEN utilizando la sesión
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+
+        // 5) Límite de peticiones y bindings normales de API
+        'throttle:api',
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
     ];
 
-    /**
-     * Middleware asignables a rutas.
-     *
-     * @var array<string, class-string|string>
-     */
     protected $routeMiddleware = [
-        'auth'             => \App\Http\Middleware\Authenticate::class,
-        'auth.basic'       => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'cache.headers'    => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can'              => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest'            => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-        'signed'           => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'throttle'         => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'auth'  => \App\Http\Middleware\Authenticate::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
     ];
 }

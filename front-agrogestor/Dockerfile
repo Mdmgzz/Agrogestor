@@ -1,22 +1,16 @@
-# back-agrogestor/Dockerfile
-FROM php:8.2-cli
+# front-agrogestor/Dockerfile — usa el servidor de Angular en vez de Nginx
+FROM node:18-alpine
 
-# Instala dependencias, Composer, etc. (igual que antes)…
-RUN apt-get update && apt-get install -y libpq-dev zip unzip git \
-  && docker-php-ext-install pdo_pgsql zip
+WORKDIR /usr/src/app
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# 1) Instala Angular CLI y dependencias
+COPY package*.json ./
+RUN npm install -g @angular/cli \
+    && npm ci
 
-WORKDIR /var/www/html
-
-COPY composer.json composer.lock ./
-RUN composer install --no-interaction --optimize-autoloader
-
+# 2) Copia el resto y expón el puerto
 COPY . .
+EXPOSE 4200
 
-RUN chown -R www-data:www-data storage bootstrap/cache
-
-EXPOSE 8000
-
-# El CMD que lanza Laravel, reemplaza el entrypoint por defecto
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# 3) Arranca el servidor de dev de Angular
+CMD ["ng", "serve", "--host", "0.0.0.0", "--disable-host-check"]

@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: agrogestor
+      POSTGRES_DB: agrogestor_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: 123456
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -20,13 +18,27 @@ services:
       - ./back-agrogestor:/var/www/html
     depends_on:
       - db
+    # Necesitamos pasar estas variables a Laravel
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: '5432'
+      DB_DATABASE: agrogestor_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: 123456
+      APP_ENV: local
+      # Pon aquí tu key, asegurándote de escaparla
+      APP_KEY: "base64:TU_APP_KEY"
     ports:
       - "8000:8000"
+    entrypoint:
+      - php
+      - artisan
+      - serve
+      - --host=0.0.0.0
+      - --port=8000
     networks:
       - agro_net
-
-    # ---- ESTO ES NUEVO ----
-    entrypoint: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
   frontend:
     build:

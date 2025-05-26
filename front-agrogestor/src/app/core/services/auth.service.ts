@@ -1,27 +1,37 @@
-// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { switchMap, Observable } from 'rxjs';
+
+export interface LoginPayload { correo: string; contrasena: string; }
+export interface User         { /* tus campos */ }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_KEY = 'api_token';
+  private base = 'http://localhost:8000';
 
-  /** Guarda el token tras hacer login */
-  setToken(token: string) {
-    localStorage.setItem(this.TOKEN_KEY, token);
+  constructor(private http: HttpClient) {}
+
+  login(payload: { correo: string; contrasena: string }) {
+  return this.http
+    .get<void>(`${this.base}/sanctum/csrf-cookie`, { withCredentials: true })
+    .pipe(
+      switchMap(() =>
+        this.http.post<{ user: User; token: string }>(
+          `${this.base}/api/login`,
+          payload,                // { correo, contrasena }
+          { withCredentials: true }
+        )
+      )
+    );
+}
+  me(): Observable<User> {
+    return this.http.get<User>(
+      `${this.base}/api/user`,
+      { withCredentials: true }
+    );
   }
 
-  /** Elimina el token al hacer logout */
-  clearToken() {
-    localStorage.removeItem(this.TOKEN_KEY);
-  }
-
-  /** Comprueba si hay un token almacenado */
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  /** Opcional: recuperar el token para el interceptor */
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+  logout() {
+    return this.http.post(`${this.base}/api/logout`, {}, { withCredentials: true });
   }
 }

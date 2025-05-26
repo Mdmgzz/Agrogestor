@@ -12,6 +12,11 @@ class Usuario extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuarios';
+    
+    public function getAuthPassword()
+    {
+        return $this->contrasena;
+    }
 
     protected $fillable = [
         'nombre',
@@ -28,6 +33,8 @@ class Usuario extends Authenticatable
     {
         $this->attributes['contrasena'] = bcrypt($value);
     }
+
+    
 
     // Relaciones...
     public function parcelas()    { return $this->hasMany(Parcela::class, 'usuario_id'); }

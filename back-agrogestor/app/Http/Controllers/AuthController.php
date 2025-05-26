@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -40,29 +41,39 @@ class AuthController extends Controller
      * Login de usuarios.
      * POST /api/login
      */
-    public function login(Request $req)
-    {
-        $creds = $req->validate([
-            'correo'     => 'required|email',
-            'contrasena' => 'required|string',
-        ]);
+ public function login(Request $req)
+{
+    $creds = $req->validate([
+        'correo'     => 'required|email',
+        'contrasena' => 'required|string',
+    ]);
 
-        $user = Usuario::where('correo', $creds['correo'])->first();
-        if (! $user || ! Hash::check($creds['contrasena'], $user->contrasena)) {
-            return response()->json(['message' => 'Credenciales inválidas'], 401);
-        }
-
-        $token = $user->createToken('api_token')->plainTextToken;
-        return response()->json(['user' => $user, 'token' => $token]);
+    if (! Auth::attempt([
+        'correo'     => $creds['correo'],
+        'password' => $creds['contrasena'],
+    ])) {
+        return response()->json(['message'=>'Credenciales inválidas es aqui'], 401);
     }
 
-    /**
-     * Logout de usuario autenticado.
-     * POST /api/logout
-     */
+    $req->session()->regenerate();
+
+    return response()->json([
+      'user'  => $req->user(),
+      'token' => $req->user()->createToken('api_token')->plainTextToken
+    ]);
+}
+
+    public function me(Request $req)
+    {
+        return response()->json($req->user());
+    }
+
     public function logout(Request $req)
     {
-        $req->user()->tokens()->delete();
-        return response()->json(['message' => 'Sesión cerrada'], 200);
+        Auth::logout();
+        $req->session()->invalidate();
+        $req->session()->regenerateToken();
+        return response()->json(['message'=>'Sesión cerrada'], 200);
     }
+
 }
