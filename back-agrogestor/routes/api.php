@@ -9,10 +9,13 @@ use App\Http\Controllers\AdjuntoController;
 
 // 1) Login público
 Route::post('login', [AuthController::class, 'login']);
+Route::post('password/email',    [AuthController::class, 'sendResetLinkEmail']);
+Route::post('password/reset',    [AuthController::class, 'resetPassword']);
+Route::post('register',[AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user',     [AuthController::class,'me']);        
     Route::post('logout',  [AuthController::class,'logout']);    
-    Route::post('register',[AuthController::class, 'register']);
+
 
     Route::apiResource('usuarios',     UserController::class);
     Route::apiResource('parcelas',     ParcelaController::class);

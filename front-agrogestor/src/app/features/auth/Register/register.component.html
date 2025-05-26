@@ -1,4 +1,4 @@
-<!-- src/app/features/auth/login/login.component.html -->
+<!-- src/app/features/auth/register/register.component.html -->
 <div
   class="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10
          flex items-center justify-center p-4"
@@ -20,15 +20,59 @@
       <img src="/assets/LogoAgrogestor.png" alt="Agrogestor Logo" class="h-24 w-auto" />
     </div>
 
-    <!-- Título -->
+    <!-- Título y subtítulo -->
     <div class="p-8 space-y-6">
-      <h2 class="text-2xl font-bold text-primary text-center">Iniciar Sesión</h2>
+      <h2 class="text-2xl font-bold text-primary text-center">Crear cuenta</h2>
       <p class="text-center text-text-secondary">
-        Accede y gestiona tus parcelas al instante
+        Regístrate para comenzar a gestionar tus parcelas
       </p>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
-        <!-- Email -->
+        <!-- Nombre -->
+        <div>
+          <label for="nombre" class="block text-sm font-medium text-text-primary">
+            Nombre
+          </label>
+          <input
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            placeholder="Tu nombre"
+            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
+                   focus:border-primary focus:ring-2 focus:ring-primary
+                   placeholder-gray-400 transition"
+          />
+          <div
+            *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid"
+            class="text-red-500 text-sm mt-1"
+          >
+            El nombre es obligatorio.
+          </div>
+        </div>
+
+        <!-- Apellidos -->
+        <div>
+          <label for="apellidos" class="block text-sm font-medium text-text-primary">
+            Apellidos
+          </label>
+          <input
+            id="apellidos"
+            type="text"
+            formControlName="apellidos"
+            placeholder="Tus apellidos"
+            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
+                   focus:border-primary focus:ring-2 focus:ring-primary
+                   placeholder-gray-400 transition"
+          />
+          <div
+            *ngIf="form.get('apellidos')?.touched && form.get('apellidos')?.invalid"
+            class="text-red-500 text-sm mt-1"
+          >
+            Los apellidos son obligatorios.
+          </div>
+        </div>
+
+        <!-- Correo -->
         <div>
           <label for="correo" class="block text-sm font-medium text-text-primary">
             Correo electrónico
@@ -46,12 +90,16 @@
             *ngIf="form.get('correo')?.touched && form.get('correo')?.invalid"
             class="text-red-500 text-sm mt-1"
           >
-            <div *ngIf="form.get('correo')?.errors?.['required']">El correo es obligatorio.</div>
-            <div *ngIf="form.get('correo')?.errors?.['correo']">Introduce un correo válido.</div>
+            <div *ngIf="form.get('correo')?.errors?.['required']">
+              El correo es obligatorio.
+            </div>
+            <div *ngIf="form.get('correo')?.errors?.['email']">
+              Introduce un correo válido.
+            </div>
           </div>
         </div>
 
-        <!-- Password -->
+        <!-- Contraseña -->
         <div>
           <label for="contrasena" class="block text-sm font-medium text-text-primary">
             Contraseña
@@ -69,10 +117,25 @@
             *ngIf="form.get('contrasena')?.touched && form.get('contrasena')?.invalid"
             class="text-red-500 text-sm mt-1"
           >
-            <div *ngIf="form.get('contrasena')?.errors?.['required']">
-              La contraseña es obligatoria.
-            </div>
+            La contraseña es obligatoria (mínimo 6 caracteres).
           </div>
+        </div>
+
+        <!-- Rol -->
+        <div>
+          <label for="rol" class="block text-sm font-medium text-text-primary">
+            Rol
+          </label>
+          <select
+            id="rol"
+            formControlName="rol"
+            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
+                   focus:border-primary focus:ring-2 focus:ring-primary
+                   transition"
+          >
+            <option value="TECNICO_AGRICOLA">Técnico agrícola</option>
+            <option value="INSPECTOR">Inspector</option>
+          </select>
         </div>
 
         <!-- Botón -->
@@ -96,14 +159,15 @@
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             ></path>
           </svg>
-          {{ loading ? 'Accediendo...' : 'Entrar' }}
+          {{ loading ? 'Registrando...' : 'Registrarse' }}
         </button>
       </form>
 
-      <!-- Links secundarios -->
-      <div class="mt-4 flex justify-between text-sm text-text-secondary">
-        <a routerLink="/forgot-password" class="hover:underline text-primary">¿Olvidaste tu contraseña?</a>
-        <a routerLink="/register" class="hover:underline text-primary ">Regístrate</a>
+      <!-- Link secundario -->
+      <div class="mt-4 text-center text-sm text-text-secondary">
+        <a routerLink="/login" class="hover:underline text-primary">
+          ¿Ya tienes cuenta?
+        </a>
       </div>
     </div>
   </div>

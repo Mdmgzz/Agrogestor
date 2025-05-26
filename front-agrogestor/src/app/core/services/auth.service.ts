@@ -35,4 +35,39 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('api_token');
   }
+
+  register(data: {
+    nombre: string;
+    apellidos: string;
+    correo: string;
+    contrasena: string;
+    rol: 'TECNICO_AGRICOLA' | 'INSPECTOR';
+  }) {
+    return this.http
+      .post<{ user: any; token: string }>(
+        // <— aquí apuntamos al mismo backend que el login:
+        `${this.base}/api/register`,
+        data
+      )
+      .pipe(tap(res => localStorage.setItem('token', res.token)));
+  }
+
+ forgotPassword(data: { correo: string }) {
+    return this.http.post<{ message: string }>(
+      `${this.base}/api/password/email`,
+      data
+    );
+  }
+
+  resetPassword(data: {
+    token: string;
+    correo: string;
+    contrasena: string;
+    password_confirmation: string;
+  }) {
+    return this.http.post<{ message: string }>(
+      `${this.base}/api/password/reset`,
+      data
+    );
+  }
 }

@@ -6,6 +6,7 @@ use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -13,29 +14,44 @@ class AuthController extends Controller
      * Registro de usuarios (solo Administradores autenticados).
      * POST /api/register
      */
+   /**
+     * Registro público de técnicos e inspectores.
+     * POST /api/register
+     */
     public function register(Request $req)
-    {
+{
+    $data = $req->validate([
+        'nombre'     => 'required|string|max:100',
+        'apellidos'  => 'required|string|max:100',
+        'correo'     => 'required|email|unique:usuarios,correo',
+        'contrasena' => 'required|string|min:6',
+        'rol'        => 'required|in:TECNICO_AGRICOLA,INSPECTOR',
+    ]);
 
-        $authUser = $req->user();
-        if (! $authUser || $authUser->rol !== 'ADMINISTRADOR') {
-            abort(403, 'Solo los administradores pueden registrar nuevos usuarios.');
-        }
+    // DEBUG 1: log del payload
+    \Log::info('Register payload: ' . json_encode($data));
 
-        $data = $req->validate([
-            'nombre'     => 'required|string|max:100',
-            'apellidos'  => 'required|string|max:100',
-            'correo'     => 'required|email|unique:usuarios,correo',
-            'contrasena' => 'required|string|min:6',
-            'rol'        => 'required|in:ADMINISTRADOR,TECNICO_AGRICOLA,INSPECTOR',
-        ]);
-
-        // Una sola vez hash de la contraseña
-        //$data['contrasena'] = Hash::make($data['contrasena']);
+    // Intentamos crear el usuario dentro de un try/catch para capturar errores
+    try {
         $newUser = Usuario::create($data);
-
-        $token = $newUser->createToken('api_token')->plainTextToken;
-        return response()->json(['user' => $newUser, 'token' => $token], 201);
+        // DEBUG 2: log del usuario creado
+        \Log::info('New user created: ' . json_encode($newUser));
+    } catch (\Exception $e) {
+        \Log::error('Error creating user: ' . $e->getMessage());
+        return response()->json(['message' => 'Error interno'], 500);
     }
+
+    // DEBUG 3: si quieres ver el objeto en Postman, descomenta dd():
+    // dd($newUser);
+
+    $token = $newUser->createToken('api_token')->plainTextToken;
+
+    return response()->json([
+        'user'  => $newUser,
+        'token' => $token,
+    ], 201);
+}
+
 
     /**
      * Login de usuarios.
@@ -75,5 +91,38 @@ class AuthController extends Controller
         $req->session()->regenerateToken();
         return response()->json(['message'=>'Sesión cerrada'], 200);
     }
+
+    public function sendResetLinkEmail(Request $req) {
+  $req->validate(['correo' => 'required|email|exists:usuarios,correo']);
+  $status = Password::sendResetLink(
+    $req->only('correo')
+  );
+  return $status === Password::RESET_LINK_SENT
+    ? response()->json(['message' => 'Link enviado'])
+    : response()->json(['message' => 'Error enviando link'], 500);
+}
+
+public function resetPassword(Request $req) {
+  $req->validate([
+    'token'    => 'required',
+    'correo'   => 'required|email',
+    'contrasena' => 'required|min:6|confirmed',
+  ]);
+  $status = Password::reset(
+    [
+      'email'                 => $req->correo,
+      'password'              => $req->contrasena,
+      'password_confirmation' => $req->contrasena_confirmation,
+      'token'                 => $req->token,
+    ],
+    function ($user, $password) {
+      $user->contrasena = Hash::make($password);
+      $user->save();
+    }
+  );
+  return $status === Password::PASSWORD_RESET
+    ? response()->json(['message' => 'Contraseña restablecida'])
+    : response()->json(['message' => 'Error restableciendo'], 500);
+}
 
 }
