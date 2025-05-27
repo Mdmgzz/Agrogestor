@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService, LoginPayload } from '../../../core/services/auth.service';
+import { AuthService, LoginPayload, Usuario } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +18,10 @@ import { AuthService, LoginPayload } from '../../../core/services/auth.service';
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  form: FormGroup<{ correo: FormControl<string>; contrasena: FormControl<string>; }>;
+  form: FormGroup<{
+    correo: FormControl<string>;
+    contrasena: FormControl<string>;
+  }>;
   loading = false;
   error: string | null = null;
 
@@ -38,16 +41,32 @@ export class LoginComponent {
       this.form.markAllAsTouched();
       return;
     }
+
     this.loading = true;
     this.error = null;
+
     const payload: LoginPayload = this.form.getRawValue();
     this.auth.login(payload).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: ({ user }: { user: Usuario; token: string }) => {
+        // Redirigir según el rol del usuario
+        switch (user.rol) {
+          case 'ADMINISTRADOR':
+            this.router.navigate(['/dashboard/admin']);
+            break;
+          case 'TECNICO_AGRICOLA':
+            this.router.navigate(['/dashboard/tecnico']);
+            break;
+          case 'INSPECTOR':
+            this.router.navigate(['/dashboard/inspector']);
+            break;
+          default:
+            this.router.navigate(['/dashboard']);
+        }
+      },
       error: err => {
         this.error = err.error?.message ?? 'Credenciales incorrectas';
         this.loading = false;
-      },
-      complete: () => this.loading = false
+      }
     });
   }
 }

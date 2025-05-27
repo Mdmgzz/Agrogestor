@@ -84,12 +84,12 @@ class AuthController extends Controller
         return response()->json($req->user());
     }
 
-    public function logout(Request $req)
+    public function logout(Request $request)
     {
-        Auth::logout();
-        $req->session()->invalidate();
-        $req->session()->regenerateToken();
-        return response()->json(['message'=>'Sesión cerrada'], 200);
+        // Obtiene y borra únicamente el token que usó esta petición
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Sesión cerrada'], 200);
     }
 
     public function sendResetLinkEmail(Request $req) {

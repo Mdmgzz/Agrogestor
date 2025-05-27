@@ -8,28 +8,49 @@ export interface LoginPayload { correo: string; contrasena: string; }
 export interface AuthResponse { user: any; token: string; }
 export interface User { id: number; name: string; correo: string; }
 
+export interface Usuario {
+  id: number;
+  nombre: string;
+  apellidos: string;
+  correo: string;
+  rol: 'ADMINISTRADOR' | 'TECNICO_AGRICOLA' | 'INSPECTOR';
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  login(payload: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(
+  login(data: { correo: string; contrasena: string }) {
+  return this.http
+    .post<{ user: Usuario; token: string }>(
       `${this.base}/api/login`,
-      payload
-    ).pipe(
-      tap(res => localStorage.setItem('api_token', res.token))
+      data
+    )
+    .pipe(
+      tap(res => {
+        localStorage.setItem('token', res.token);
+      })
     );
+}
+  
+
+ logout(): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(
+        `${this.base}/api/logout`,
+        {}
+      )
+      .pipe(
+        tap(() => {
+          localStorage.removeItem('token');
+        })
+      );
   }
 
-  logout() {
-    localStorage.removeItem('api_token');
-    // opcional: llamar a backend logout si tienes tokens revocados
-  }
-
-  me(): Observable<User> {
-    return this.http.get<User>(`${this.base}/api/user`);
+  me() {
+    return this.http.get<Usuario>(`${this.base}/api/user`);
   }
 
   getToken(): string | null {

@@ -1,0 +1,135 @@
+<!-- src/app/features/adminDashboard/admin-dashboard.component.html -->
+<div class="min-h-screen flex flex-col
+            bg-gradient-to-b from-secondary/10 via-primary/20 to-bg-main">
+  <!-- Navbar -->
+  <nav class="bg-primary/10 shadow-sm flex items-center justify-between px-6 py-2">
+    <div class="flex items-center space-x-2">
+      <img
+        src="/assets/Agrogestor_sinTexto.png"
+        alt="Logo"
+        class="h-24 w-auto object-contain"
+      />
+      <span class="text-lg font-bold text-primary">Agrogestor Admin</span>
+    </div>
+    <button
+      (click)="logout()"
+      class="flex items-center space-x-1 px-3 py-1.5 text-sm bg-secondary text-white rounded-lg hover:bg-secondary/90 transition focus:outline-none focus:ring-2 focus:ring-secondary/50"
+      aria-label="Cerrar sesión"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-9V5m0 14a2 2 0 100-4 2 2 0 000 4z" />
+      </svg>
+      <span class="text-red-600 font-bold">Cerrar sesión</span>
+    </button>
+  </nav>
+
+  <!-- Contenedor central sin degradado extra -->
+  <main class="flex-1 max-w-7xl mx-auto space-y-12 py-12 px-4">
+    <!-- Cabecera -->
+    <header class="space-y-2">
+      <h1 class="text-3xl font-semibold text-text-primary">Panel de Control</h1>
+      <p class="text-text-secondary">Visión general rápida de tu plataforma</p>
+    </header>
+
+    <!-- Estadísticas -->
+    <div *ngIf="!loading && !error; else stateFeedback"
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+      <!-- Usuarios -->
+      <div
+        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
+        tabindex="0"
+        (click)="goTo('usuarios')"
+      >
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-primary/10 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5.121 17.804A9.003 9.003 0 0112 15c2.21 0 4.21.896 5.879 2.365M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-3xl font-bold text-text-primary">{{ stats.usuarios }}</p>
+            <p class="text-base text-text-secondary">Usuarios</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parcelas -->
+      <div
+        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
+        tabindex="0"
+        (click)="goTo('parcelas')"
+      >
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-secondary/10 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-secondary" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 7l6-4v18l-6-4m18-10l-6 4v10l6-4m0-10V3" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-3xl font-bold text-text-primary">{{ stats.parcelas }}</p>
+            <p class="text-base text-text-secondary">Parcelas</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cultivos -->
+      <div
+        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
+        tabindex="0"
+        (click)="goTo('cultivos')"
+      >
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-accent/10 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-accent" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 1.343-3 3 0 1.333.84 2.465 2 2.828V21l1.707-1.707A2.995 2.995 0 0015 14c0-1.657-1.343-3-3-3z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-3xl font-bold text-text-primary">{{ stats.cultivos }}</p>
+            <p class="text-base text-text-secondary">Cultivos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actividades -->
+      <div
+        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
+        tabindex="0"
+        (click)="goTo('actividades')"
+      >
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-primary/20 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m1-4h3m-3 8h3M4 6h3m-3 8h3m-3 8h3" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-3xl font-bold text-text-primary">{{ stats.actividades }}</p>
+            <p class="text-base text-text-secondary">Actividades</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading / Error -->
+    <ng-template #stateFeedback>
+      <div class="text-center py-12 space-y-4">
+        <div *ngIf="loading" class="inline-block animate-pulse text-text-secondary">
+          Cargando estadísticas...
+        </div>
+        <div *ngIf="error" class="text-red-600">{{ error }}</div>
+      </div>
+    </ng-template>
+  </main>
+</div>
