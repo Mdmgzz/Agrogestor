@@ -1,19 +1,35 @@
 <!-- src/app/features/adminDashboard/admin-dashboard.component.html -->
-<div class="min-h-screen flex flex-col
-            bg-gradient-to-b from-secondary/10 via-primary/20 to-bg-main">
-  <!-- Navbar -->
-  <nav class="bg-primary/10 shadow-sm flex items-center justify-between px-6 py-2">
-    <div class="flex items-center space-x-2">
+<div
+  class="min-h-screen flex flex-col
+         bg-gradient-to-b
+         from-secondary/20 via-secondary/40 to-secondary/60"
+>
+
+  <!-- Navbar: ligeramente más oscuro y con borde más marcado -->
+  <nav
+    class="sticky top-0 z-10 backdrop-blur-lg
+           bg-secondary/80
+           border-b border-secondary/50
+           flex items-center justify-between
+           px-8 py-4 shadow-md"
+  >
+    <div class="flex items-center space-x-4">
       <img
         src="/assets/Agrogestor_sinTexto.png"
         alt="Logo"
-        class="h-24 w-auto object-contain"
+        class="h-16 w-auto object-contain"
       />
-      <span class="text-lg font-bold text-primary">Agrogestor Admin</span>
+      <h1 class="text-2xl font-extrabold text-white">
+        Agrogestor Admin
+      </h1>
     </div>
+
     <button
       (click)="logout()"
-      class="flex items-center space-x-1 px-3 py-1.5 text-sm bg-secondary text-white rounded-lg hover:bg-secondary/90 transition focus:outline-none focus:ring-2 focus:ring-secondary/50"
+      class="mr-4 flex items-center space-x-2 px-4 py-2 text-sm
+             bg-secondary/90 hover:bg-secondary/100 text-white
+             rounded-lg shadow hover:shadow-lg transform hover:-translate-y-0.5
+             transition focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-secondary/60"
       aria-label="Cerrar sesión"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -21,108 +37,22 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-9V5m0 14a2 2 0 100-4 2 2 0 000 4z" />
       </svg>
-      <span class="text-red-600 font-bold">Cerrar sesión</span>
+      <span class="font-semibold">Cerrar sesión</span>
     </button>
   </nav>
 
-  <!-- Contenedor central sin degradado extra -->
-  <main class="flex-1 max-w-7xl mx-auto space-y-12 py-12 px-4">
+  <!-- Contenido principal: centrar y dar más aire -->
+  <main class="flex-1 max-w-7xl mx-auto py-16 px-6">
+
     <!-- Cabecera -->
-    <header class="space-y-2">
-      <h1 class="text-3xl font-semibold text-text-primary">Panel de Control</h1>
-      <p class="text-text-secondary">Visión general rápida de tu plataforma</p>
+    <header class="mb-10">
+      <h2 class="text-4xl font-bold text-text-primary">Panel de Control</h2>
+      <p class="mt-1 text-lg text-text-secondary">
+        Visión general rápida de tu plataforma
+      </p>
     </header>
 
-    <!-- Estadísticas -->
-    <div *ngIf="!loading && !error; else stateFeedback"
-         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-      <!-- Usuarios -->
-      <div
-        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
-        tabindex="0"
-        (click)="goTo('usuarios')"
-      >
-        <div class="flex items-center space-x-4">
-          <div class="p-3 bg-primary/10 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M5.121 17.804A9.003 9.003 0 0112 15c2.21 0 4.21.896 5.879 2.365M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-text-primary">{{ stats.usuarios }}</p>
-            <p class="text-base text-text-secondary">Usuarios</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Parcelas -->
-      <div
-        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
-        tabindex="0"
-        (click)="goTo('parcelas')"
-      >
-        <div class="flex items-center space-x-4">
-          <div class="p-3 bg-secondary/10 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-secondary" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 7l6-4v18l-6-4m18-10l-6 4v10l6-4m0-10V3" />
-            </svg>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-text-primary">{{ stats.parcelas }}</p>
-            <p class="text-base text-text-secondary">Parcelas</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cultivos -->
-      <div
-        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
-        tabindex="0"
-        (click)="goTo('cultivos')"
-      >
-        <div class="flex items-center space-x-4">
-          <div class="p-3 bg-accent/10 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-accent" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8c-1.657 0-3 1.343-3 3 0 1.333.84 2.465 2 2.828V21l1.707-1.707A2.995 2.995 0 0015 14c0-1.657-1.343-3-3-3z" />
-            </svg>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-text-primary">{{ stats.cultivos }}</p>
-            <p class="text-base text-text-secondary">Cultivos</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actividades -->
-      <div
-        class="bg-white rounded-xl shadow p-6 hover:shadow-md transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/25"
-        tabindex="0"
-        (click)="goTo('actividades')"
-      >
-        <div class="flex items-center space-x-4">
-          <div class="p-3 bg-primary/20 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m1-4h3m-3 8h3M4 6h3m-3 8h3m-3 8h3" />
-            </svg>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-text-primary">{{ stats.actividades }}</p>
-            <p class="text-base text-text-secondary">Actividades</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading / Error -->
+    <!-- Feedback mientras carga o error -->
     <ng-template #stateFeedback>
       <div class="text-center py-12 space-y-4">
         <div *ngIf="loading" class="inline-block animate-pulse text-text-secondary">
@@ -131,5 +61,124 @@
         <div *ngIf="error" class="text-red-600">{{ error }}</div>
       </div>
     </ng-template>
+
+    <!-- Estadísticas: más espacio entre tarjetas -->
+    <ng-container *ngIf="!loading && !error; else stateFeedback">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 justify-center">
+
+        <!-- Usuarios -->
+        <div
+          routerLink="/dashboard/admin/usuarios" tabindex="0"
+          class="group rounded-2xl p-6 cursor-pointer
+                 bg-gradient-to-br from-primary/10 to-primary/30
+                 border-t-4 border-primary/80
+                 shadow-lg hover:shadow-2xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50"
+        >
+          <div class="flex items-center space-x-4">
+            <div class="p-3 rounded-full bg-primary/30 group-hover:bg-primary/40 transition-colors">
+              <!-- icono usuarios -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M5.121 17.804A9.003 9.003 0 0112 15c2.21 0 4.21.896 5.879 2.365M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-3xl font-extrabold text-text-primary">{{ stats.usuarios }}</p>
+              <p class="mt-1 text-sm text-text-secondary uppercase tracking-wide">
+                Usuarios
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parcelas -->
+        <div
+          routerLink="/dashboard/admin/parcelas" tabindex="0"
+          class="group rounded-2xl p-6 cursor-pointer
+                 bg-gradient-to-br from-secondary/10 to-secondary/30
+                 border-t-4 border-secondary/80
+                 shadow-lg hover:shadow-2xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-secondary/50"
+        >
+          <div class="flex items-center space-x-4">
+            <div class="p-3 rounded-full bg-secondary/30 group-hover:bg-secondary/40 transition-colors">
+              <!-- icono parcelas -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-secondary" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 7l6-4v18l-6-4m18-10l-6 4v10l6-4m0-10V3" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-3xl font-extrabold text-text-primary">{{ stats.parcelas }}</p>
+              <p class="mt-1 text-sm text-text-secondary uppercase tracking-wide">
+                Parcelas
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cultivos -->
+        <div
+          routerLink="/dashboard/admin/cultivos" tabindex="0"
+          class="group rounded-2xl p-6 cursor-pointer
+                 bg-gradient-to-br from-accent/10 to-accent/30
+                 border-t-4 border-accent/80
+                 shadow-lg hover:shadow-2xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-accent/50"
+        >
+          <div class="flex items-center space-x-4">
+            <div class="p-3 rounded-full bg-accent/30 group-hover:bg-accent/40 transition-colors">
+              <!-- icono cultivos -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8c-1.657 0-3 1.343-3 3 0 1.333.84 2.465 2 2.828V21l1.707-1.707A2.995 2.995 0 0015 14c0-1.657-1.343-3-3-3z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-3xl font-extrabold text-text-primary">{{ stats.cultivos }}</p>
+              <p class="mt-1 text-sm text-text-secondary uppercase tracking-wide">
+                Cultivos
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actividades -->
+        <div
+          routerLink="/dashboard/admin/actividades" tabindex="0"
+          class="group rounded-2xl p-6 cursor-pointer
+                 bg-gradient-to-br from-primary/10 to-primary/30
+                 border-t-4 border-primary/80
+                 shadow-lg hover:shadow-2xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50"
+        >
+          <div class="flex items-center space-x-4">
+            <div class="p-3 rounded-full bg-primary/30 group-hover:bg-primary/40 transition-colors">
+              <!-- icono actividades -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m1-4h3m-3 8h3M4 6h3m-3 8h3m-3 8h3" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-3xl font-extrabold text-text-primary">{{ stats.actividades }}</p>
+              <p class="mt-1 text-sm text-text-secondary uppercase tracking-wide">
+                Actividades
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
   </main>
 </div>

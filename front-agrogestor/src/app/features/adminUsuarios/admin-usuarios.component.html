@@ -1,0 +1,113 @@
+<!-- src/app/features/usuarios/admin-usuarios.component.html -->
+<div
+  class="min-h-screen flex flex-col
+         bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60"
+>
+  <!-- Navbar + botón “Volver” -->
+  <nav
+    class="sticky top-0 z-10 backdrop-blur-lg
+           bg-secondary/80 border-b border-secondary/50
+           flex items-center justify-between px-8 py-4 shadow-md"
+  >
+    <div class="flex items-center space-x-4">
+      <a routerLink="/dashboard/admin"
+         class="flex items-center space-x-2 text-white hover:text-white/80 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 19l-7-7 7-7" />
+        </svg>
+        <span class="font-medium">Volver</span>
+      </a>
+      <img src="/assets/Agrogestor_sinTexto.png" alt="Logo" class="h-16 w-auto object-contain"/>
+      <h1 class="text-2xl font-extrabold text-white">Gestión de Usuarios</h1>
+    </div>
+    <button
+      (click)="crearUsuario()"
+      class="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-secondary text-white
+             rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-0.5
+             focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 4v16m8-8H4" />
+      </svg>
+      <span class="font-medium">Nuevo Usuario</span>
+    </button>
+  </nav>
+
+  <main class="flex-1 max-w-7xl mx-auto py-16 px-6">
+    <!-- Filtros -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+      <input
+        type="text"
+        placeholder="Buscar nombre o correo..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="processFilters()"
+        class="flex-1 px-4 py-2 border-2 border-bg-main rounded-lg
+               focus:border-primary focus:ring-2 focus:ring-primary transition"
+      />
+      <select
+        [(ngModel)]="selectedRole"
+        (ngModelChange)="processFilters()"
+        class="w-48 px-4 py-2 border-2 border-bg-main rounded-lg
+               focus:border-primary focus:ring-2 focus:ring-primary transition"
+      >
+        <option value="ALL">Todos los roles</option>
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+    </div>
+
+    <!-- Feedback -->
+    <ng-template #stateFeedback>
+      <div class="text-center py-12 space-y-4">
+        <div *ngIf="loading" class="inline-block animate-pulse text-text-secondary">
+          Cargando usuarios...
+        </div>
+        <div *ngIf="error" class="text-red-600">{{ error }}</div>
+      </div>
+    </ng-template>
+
+    <!-- Lista de usuarios -->
+    <ng-container *ngIf="!loading && !error; else stateFeedback">
+      <div
+        *ngFor="let u of usuarios"
+        tabindex="0"
+        class="bg-white rounded-2xl shadow-md p-6 mb-6 flex items-center justify-between
+               cursor-pointer transition hover:-translate-y-1 hover:shadow-xl
+               focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50"
+      >
+        <div>
+          <p class="text-lg font-semibold text-text-primary">
+            {{ u.nombre }} {{ u.apellidos }}
+          </p>
+          <p class="text-text-secondary">{{ u.correo }}</p>
+          <span
+            class="inline-block mt-1 px-2 py-0.5 text-sm rounded-full
+                   bg-accent/20 text-accent font-medium"
+          >
+            {{ u.rol }}
+          </span>
+        </div>
+        <div class="flex space-x-2">
+          <button
+            (click)="editarUsuario(u.id); $event.stopPropagation()"
+            class="px-3 py-1 bg-secondary hover:bg-secondary/90 text-white rounded-lg shadow transition"
+          >
+            Editar
+          </button>
+          <button
+            (click)="eliminarUsuario(u.id); $event.stopPropagation()"
+            class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow transition"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+      <div *ngIf="usuarios.length === 0" class="text-center text-text-secondary py-12">
+        No hay usuarios registrados.
+      </div>
+    </ng-container>
+  </main>
+</div>

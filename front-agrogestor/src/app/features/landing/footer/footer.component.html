@@ -1,18 +1,15 @@
-<!-- src/app/features/landing/footer/footer.component.html -->
-<footer class="bg-primary text-white pt-10 pb-6">
-  <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-    <!-- Logo + breve descripción -->
-    <div>
-      <img src="/assets/LogoAgrogestor.png" alt="Logo Agrogestor" class="h-10 mb-4" />
+<footer class="bg-primary/80 text-white pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+    <div class="space-y-4">
+      <img src="/assets/LogoAgrogestor.png" alt="Logo Agrogestor" class="h-12" />
       <p class="text-sm text-white/80">
         La solución para digitalizar tus explotaciones agrícolas, hoy.
       </p>
     </div>
 
-    <!-- Enlaces -->
-    <div class="space-y-2">
-      <h4 class="font-semibold mb-2">Enlaces</h4>
-      <ul class="space-y-1 text-sm">
+    <div class="space-y-4">
+      <h4 class="font-semibold">Enlaces</h4>
+      <ul class="space-y-2 text-sm">
         <li><a href="#" class="hover:underline">Sobre nosotros</a></li>
         <li><a href="#" class="hover:underline">Política de Privacidad</a></li>
         <li><a href="#" class="hover:underline">Términos de Servicio</a></li>
@@ -20,18 +17,17 @@
       </ul>
     </div>
 
-    <!-- Newsletter -->
-    <div>
-      <h4 class="font-semibold mb-2">Suscríbete</h4>
+    <div class="space-y-4">
+      <h4 class="font-semibold">Suscríbete</h4>
       <form class="flex flex-col sm:flex-row gap-2">
         <input
           type="email"
           placeholder="Tu correo"
-          class="px-4 py-2 rounded-lg text-black flex-1"
+          class="px-4 py-2 rounded-lg text-text-primary flex-1 focus:ring-2 focus:ring-accent/50"
         />
         <button
           type="submit"
-          class="px-4 py-2 bg-accent hover:bg-accent/90 text-primary font-semibold rounded-lg transition"
+          class="px-6 py-2 bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg transition"
         >
           Enviar
         </button>
@@ -39,7 +35,7 @@
     </div>
   </div>
 
-  <div class="mt-8 text-center text-sm text-white/70">
+  <div class="mt-12 text-center text-sm text-white/70">
     &copy; 2025 Agrogestor. Todos los derechos reservados.
   </div>
 </footer>

@@ -1,0 +1,122 @@
+<!-- src/app/features/tecnico-dashboard/tecnico-dashboard.component.html -->
+<div
+  class="min-h-screen flex flex-col
+         bg-gradient-to-b from-secondary/10 via-secondary/30 to-secondary/50"
+>
+
+  <!-- Navbar: idéntico estilo al de AdminDashboard -->
+  <nav
+    class="sticky top-0 z-10 backdrop-blur-lg
+           bg-secondary/80
+           border-b border-secondary/50
+           flex items-center justify-between
+           px-8 py-4 shadow-md"
+  >
+    <div class="flex items-center space-x-4">
+      <img
+        src="/assets/Agrogestor_sinTexto.png"
+        alt="Logo Agrogestor"
+        class="h-16 w-auto object-contain"
+      />
+      <h1 class="text-2xl font-extrabold text-white">Panel Técnico</h1>
+    </div>
+
+    <button
+      (click)="logout()"
+      class="flex items-center space-x-2 px-4 py-2 text-sm
+             bg-secondary/90 hover:bg-secondary/100 text-white
+             rounded-lg shadow hover:shadow-lg transform hover:-translate-y-0.5
+             transition focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-secondary/60"
+      aria-label="Cerrar sesión"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-9V5m0 14a2 2 0 100-4 2 2 0 000 4z" />
+      </svg>
+      <span class="font-semibold">Cerrar sesión</span>
+    </button>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 max-w-7xl mx-auto py-12 px-6">
+    <header class="mb-8">
+      <h2 class="text-4xl font-bold text-text-primary">Tus métricas</h2>
+      <p class="mt-1 text-text-secondary">Resumen de tus parcelas, cultivos y actividades</p>
+    </header>
+
+    <ng-container *ngIf="!loading && !error; else feedback">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <!-- Parcelas -->
+        <div
+          routerLink="/dashboard/parcelas"
+          class="group rounded-2xl p-6
+                 bg-gradient-to-br from-primary/10 to-primary/30
+                 border-t-4 border-primary/80
+                 shadow-md hover:shadow-xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 cursor-pointer focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50"
+        >
+          <div class="flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 7l6-4v18l-6-4m18-10l-6 4v10l6-4m0-10V3" />
+            </svg>
+          </div>
+          <p class="text-4xl font-extrabold text-text-primary text-center">{{ stats.parcelas }}</p>
+          <p class="mt-2 text-sm uppercase text-text-secondary tracking-wide text-center">Parcelas</p>
+        </div>
+
+        <!-- Cultivos -->
+        <div
+          routerLink="/dashboard/cultivos"
+          class="group rounded-2xl p-6
+                 bg-gradient-to-br from-accent/10 to-accent/30
+                 border-t-4 border-accent/80
+                 shadow-md hover:shadow-xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 cursor-pointer focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-accent/50"
+        >
+          <div class="flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-accent" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 1.343-3 3 0 1.333.84 2.465 2 2.828V21l1.707-1.707A2.995 2.995 0 0015 14c0-1.657-1.343-3-3-3z" />
+            </svg>
+          </div>
+          <p class="text-4xl font-extrabold text-text-primary text-center">{{ stats.cultivos }}</p>
+          <p class="mt-2 text-sm uppercase text-text-secondary tracking-wide text-center">Cultivos</p>
+        </div>
+
+        <!-- Actividades -->
+        <div
+          routerLink="/dashboard/actividades"
+          class="group rounded-2xl p-6
+                 bg-gradient-to-br from-secondary/10 to-secondary/30
+                 border-t-4 border-secondary/80
+                 shadow-md hover:shadow-xl
+                 transform transition hover:-translate-y-1 hover:scale-105
+                 cursor-pointer focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-secondary/50"
+        >
+          <div class="flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-secondary" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m1-4h3m-3 8h3M4 6h3m-3 8h3m-3 8h3" />
+            </svg>
+          </div>
+          <p class="text-4xl font-extrabold text-text-primary text-center">{{ stats.actividades }}</p>
+          <p class="mt-2 text-sm uppercase text-text-secondary tracking-wide text-center">Actividades</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #feedback>
+      <div class="text-center py-12 space-y-4 text-text-secondary">
+        <div *ngIf="loading" class="inline-block animate-pulse">Cargando métricas...</div>
+        <div *ngIf="error" class="text-red-600">{{ error }}</div>
+      </div>
+    </ng-template>
+  </main>
+</div>
