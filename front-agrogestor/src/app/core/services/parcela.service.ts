@@ -13,6 +13,8 @@ export interface Usuario {
 export interface Parcela {
   id: number;
   usuario_id: number;
+  nombre: string;
+  propietario: string;
   superficie_ha: number;
   geojson: any;
   usuario: Usuario;

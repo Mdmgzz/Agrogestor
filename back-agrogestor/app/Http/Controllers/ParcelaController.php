@@ -42,6 +42,7 @@ class ParcelaController extends Controller
 
         $data = $request->validate([
             'usuario_id'   => 'required|exists:usuarios,id',
+            'nombre'       => 'required|string|max:100',
             'propietario'  => 'required|string|max:100',
             'superficie_ha'=> 'required|numeric',
             'geojson'      => 'required|json',

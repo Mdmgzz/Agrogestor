@@ -9,6 +9,7 @@ class Parcela extends Model
     protected $table = 'parcelas';
     protected $fillable = [
         'usuario_id',
+        'nombre',
         'propietario',
         'superficie_ha',
         'geojson'

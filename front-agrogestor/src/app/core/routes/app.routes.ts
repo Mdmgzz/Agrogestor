@@ -13,6 +13,8 @@ import { AdminUsuariosComponent } from '../../features/adminUsuarios/admin-usuar
 import { AdminCultivosComponent } from '../../features/adminCultivos/admin-cultivos.component';
 import { AdminActividadesComponent } from '../../features/adminActividades/admin-actividades.component';
 import { TecnicoDashboardComponent } from '../../features/tecnicoDashboard/tecnico-dashboard.component';
+import { TecnicoParcelasComponent } from '../../features/tecnicoParcelas/tecnico-parcelas.component';
+import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
 
 import { AuthGuard } from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
@@ -69,6 +71,17 @@ export const routes: Routes = [
     component: TecnicoDashboardComponent,
     canActivate: [AuthGuard]
   },
+  {
+    path: 'dashboard/tecnico/parcelas',
+    component: TecnicoParcelasComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'dashboard/tecnico/parcelas/create',
+    component: TecnicoParcelaCreateComponent,
+    canActivate: [AuthGuard]
+  },
+
 
 
   
