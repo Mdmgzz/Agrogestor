@@ -1,42 +1,42 @@
 // src/app/features/actividades/admin-actividades.component.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActividadService, Actividad } from '../../core/services/actividad.service';
-import { Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit }                    from '@angular/core';
+import { CommonModule }                         from '@angular/common';
+import { FormsModule }                          from '@angular/forms';
+import { Router, RouterModule }                 from '@angular/router';
+import { ActividadService, Actividad }          from '../../core/services/actividad.service';
 
 @Component({
   standalone: true,
   selector: 'app-admin-actividades',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './admin-actividades.component.html',
 })
 export class AdminActividadesComponent implements OnInit {
-  actividadesAll: Actividad[] = [];
   actividades: Actividad[] = [];
+  filtered:    Actividad[] = [];
 
   loading = true;
-  error: string | null = null;
+  error:   string | null = null;
 
-  // Filtros
+  // filtros
   searchTerm = '';
-  startDate = '';
-  endDate = '';
+  startDate  = '';
+  endDate    = '';
 
   constructor(
-    private svc: ActividadService,
+    private svc:    ActividadService,
     private router: Router
   ) {}
 
   ngOnInit() {
     this.svc.getAll().subscribe({
       next: data => {
-        this.actividadesAll = data;
+        this.actividades = data;
         this.applyFilters();
         this.loading = false;
       },
       error: () => {
-        this.error = 'No se pudieron cargar las actividades';
+        this.error   = 'No se pudieron cargar las actividades';
         this.loading = false;
       }
     });
@@ -44,37 +44,29 @@ export class AdminActividadesComponent implements OnInit {
 
   applyFilters() {
     const term = this.searchTerm.trim().toLowerCase();
-    this.actividades = this.actividadesAll
+    this.filtered = this.actividades
       .filter(a => {
-        // filtro por tipo de actividad
-        if (term && !a.tipo_actividad.toLowerCase().includes(term)) {
-          return false;
-        }
-        // filtro por fecha
-        if (this.startDate && a.fecha_actividad < this.startDate) {
-          return false;
-        }
-        if (this.endDate && a.fecha_actividad > this.endDate) {
-          return false;
-        }
+        if (term && !a.tipo_actividad.toLowerCase().includes(term)) return false;
+        if (this.startDate && a.fecha_actividad < this.startDate) return false;
+        if (this.endDate   && a.fecha_actividad > this.endDate)   return false;
         return true;
       })
       .sort((a, b) => a.fecha_actividad.localeCompare(b.fecha_actividad));
   }
 
   crearActividad() {
-    this.router.navigate(['/dashboard/actividades/new']);
+    this.router.navigate(['/dashboard/admin/actividades/create']);
   }
 
   editarActividad(id: number) {
-    this.router.navigate([`/dashboard/actividades/${id}/edit`]);
+    this.router.navigate(['/dashboard/admin/actividades', id, 'edit']);
   }
 
   eliminarActividad(id: number) {
     if (!confirm('¿Eliminar esta actividad?')) return;
     this.svc.delete(id).subscribe({
       next: () => {
-        this.actividadesAll = this.actividadesAll.filter(a => a.id !== id);
+        this.actividades = this.actividades.filter(a => a.id !== id);
         this.applyFilters();
       },
       error: () => alert('Error al eliminar actividad')

@@ -3,7 +3,6 @@ import { Routes } from '@angular/router';
 
 import { LandingComponent }            from '../../features/landing/landing.component';
 import { LoginComponent }              from '../../features/auth/login/login.component';
-import { DashboardComponent }          from '../../features/dashboard/dashboard.component';
 import { RegisterComponent }           from '../../features/auth/Register/register.component';
 import { ForgotPasswordComponent }     from '../../features/auth/ForgotPassword/forgot-password.component';
 import { AdminDashboardComponent }     from '../../features/adminDashboard/admin-dashboard.component';
@@ -16,7 +15,8 @@ import { TecnicoDashboardComponent }   from '../../features/tecnicoDashboard/tec
 import { TecnicoParcelasComponent }    from '../../features/tecnicoParcelas/tecnico-parcelas.component';
 import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
 import { AdminParcelaCreateComponent }   from '../../features/adminParcelas/admin-parcela-create.component';
-
+import { TecnicoCultivoCreateComponent }   from '../../features/tecnicoCultivo/tecnico-cultivo-create.component';
+import { TecnicoCultivosComponent }    from '../../features/tecnicoCultivo/tecnico-cultivo.component';
 import { AuthGuard }  from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
 
@@ -36,12 +36,6 @@ export const routes: Routes = [
   },
 
   // Técnico Dashboard
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [AuthGuard],
-    pathMatch: 'full'
-  },
   {
     path: 'dashboard/tecnico',
     component: TecnicoDashboardComponent,
@@ -98,6 +92,17 @@ export const routes: Routes = [
     path: 'dashboard/admin/actividades',
     component: AdminActividadesComponent,
     canActivate: [AuthGuard, AdminGuard]
+  },
+  // Técnico – Cultivos
+  {
+    path: 'dashboard/tecnico/cultivos',
+    component: TecnicoCultivosComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'dashboard/tecnico/cultivos/create',
+    component: TecnicoCultivoCreateComponent,
+    canActivate: [AuthGuard]
   },
 
   // Wildcard

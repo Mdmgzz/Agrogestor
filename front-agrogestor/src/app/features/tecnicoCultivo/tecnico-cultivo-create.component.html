@@ -1,0 +1,97 @@
+<!-- src/app/features/tecnicoCultivo/tecnico-cultivo-create.component.html -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60 p-6">
+  <div class="w-full max-w-lg bg-white rounded-2xl p-8 shadow-lg">
+    <h2 class="text-2xl font-extrabold text-text-primary mb-6">Nuevo Cultivo</h2>
+    <form (ngSubmit)="crearCultivo(form)" #form="ngForm" novalidate>
+      <!-- Parcela dropdown igual al admin -->
+      <div class="mb-4 relative">
+        <label class="block text-sm font-medium text-text-primary mb-2">Parcela</label>
+        <div class="flex">
+          <input type="text" name="parcela" [(ngModel)]="parcelaSearch"
+                 (focus)="showParcelaDropdown=true" (ngModelChange)="filterParcelas()"
+                 required autocomplete="off"
+                 class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+                 placeholder="Buscar parcela..."/>
+          <button type="button" (click)="showParcelaDropdown=!showParcelaDropdown"
+                  class="px-3 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    [attr.d]="showParcelaDropdown?'M19 15l-7-7-7 7':'M19 9l-7 7-7-7'"/>
+            </svg>
+          </button>
+        </div>
+        <ul *ngIf="showParcelaDropdown"
+            class="absolute z-20 w-full max-h-40 overflow-auto bg-white border border-gray-200 rounded-lg mt-1 shadow-lg">
+          <li *ngFor="let p of filteredParcelas" (click)="selectParcela(p)"
+              class="px-4 py-2 hover:bg-primary/10 cursor-pointer">
+            {{ p.nombre }} — {{ p.propietario }}
+          </li>
+        </ul>
+        <div *ngIf="form.submitted && !selectedParcelaId" class="text-red-600 text-sm mt-1">
+          Selecciona una parcela.
+        </div>
+      </div>
+
+      <!-- Variedad -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-text-primary mb-2">Variedad</label>
+        <input type="text" name="variedad" [(ngModel)]="variedad" required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"/>
+        <div *ngIf="form.submitted && !variedad" class="text-red-600 text-sm mt-1">
+          La variedad es obligatoria.
+        </div>
+      </div>
+
+      <!-- Fecha -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-text-primary mb-2">Fecha de Siembra</label>
+        <input type="date" name="fecha_siembra" [(ngModel)]="fechaSiembra" required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"/>
+        <div *ngIf="form.submitted && !fechaSiembra" class="text-red-600 text-sm mt-1">
+          La fecha es obligatoria.
+        </div>
+      </div>
+
+      <!-- Superficie -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-text-primary mb-2">Superficie (ha)</label>
+        <input type="number" name="superficie_ha" [(ngModel)]="superficie" required min="0.01" step="0.01"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"/>
+        <div *ngIf="form.submitted && (!superficie||superficie<=0)" class="text-red-600 text-sm mt-1">
+          La superficie debe ser > 0.
+        </div>
+      </div>
+
+      <!-- Mapa expandible -->
+      <div class="mb-6 relative">
+        <label class="block text-sm font-medium text-text-primary mb-2">Ubicación en el mapa</label>
+        <button type="button" (click)="toggleMapSize()"
+                class="absolute top-0 right-0 mt-6 mr-2 bg-white p-1 rounded-full shadow hover:bg-gray-100 transition">
+          📐
+        </button>
+        <div id="map"
+             [ngClass]="mapExpanded?'h-screen':'h-64'"
+             class="w-full mb-2 rounded-lg border border-gray-300 overflow-hidden transition-all">
+        </div>
+        <div *ngIf="form.submitted&&(lat==null||lng==null)" class="text-red-600 text-sm">
+          Haz clic en el mapa.
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end space-x-4">
+        <button type="button" (click)="cancelar()"
+                class="px-5 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="loading||form.invalid"
+                class="px-5 py-2 bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ loading ? 'Creando...' : 'Crear Cultivo' }}
+        </button>
+      </div>
+
+      <div *ngIf="error" class="mt-4 text-red-600">{{ error }}</div>
+    </form>
+  </div>
+</div>

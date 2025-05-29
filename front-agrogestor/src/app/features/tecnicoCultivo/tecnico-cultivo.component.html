@@ -1,15 +1,15 @@
-<!-- src/app/features/cultivos/admin-cultivos.component.html -->
+<!-- src/app/features/tecnicoCultivo/tecnico-cultivo.component.html -->
 <div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
   <nav class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50 flex items-center justify-between px-8 py-4 shadow-md">
     <div class="flex items-center space-x-4">
-      <a (click)="volverParcela()" class="flex items-center space-x-2 text-white hover:text-white/80 transition cursor-pointer">
+      <a routerLink="/dashboard/tecnico" class="flex items-center space-x-2 text-white hover:text-white/80 transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
-        <span class="font-medium">{{ parcelaId != null ? 'Volver Parcela' : 'Volver Admin' }}</span>
+        <span class="font-medium">Volver</span>
       </a>
       <img src="/assets/Agrogestor_sinTexto.png" alt="Logo" class="h-16 w-auto object-contain"/>
-      <h1 class="text-2xl font-extrabold text-white">{{ parcelaId != null ? 'Cultivos de Parcela' : 'Gestión de Cultivos' }}</h1>
+      <h1 class="text-2xl font-extrabold text-white">Mis Cultivos</h1>
     </div>
     <button (click)="crearCultivo()"
             class="flex items-center space-x-2 px-4 py-2 bg-primary/80 hover:bg-primary text-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50">
@@ -21,25 +21,21 @@
   </nav>
 
   <main class="flex-1 max-w-7xl mx-auto py-16 px-6">
-    <!-- filtros idénticos -->
+    <!-- filtros -->
     <div class="flex flex-col sm:flex-row gap-4 mb-8">
       <input type="text" placeholder="Buscar variedad..."
              [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
              class="flex-1 px-4 py-2 border-2 border-bg-main rounded-lg focus:border-primary focus:ring-2 focus:ring-primary transition"/>
-      <input type="date"
-             [(ngModel)]="startDate" (ngModelChange)="applyFilters()"
+      <input type="date" [(ngModel)]="startDate" (ngModelChange)="applyFilters()"
              class="w-40 px-4 py-2 border-2 border-bg-main rounded-lg focus:border-primary focus:ring-2 focus:ring-primary transition"/>
-      <input type="date"
-             [(ngModel)]="endDate" (ngModelChange)="applyFilters()"
+      <input type="date" [(ngModel)]="endDate" (ngModelChange)="applyFilters()"
              class="w-40 px-4 py-2 border-2 border-bg-main rounded-lg focus:border-primary focus:ring-2 focus:ring-primary transition"/>
     </div>
 
     <ng-template #stateFeedback>
       <div class="text-center py-12 space-y-4">
-        <div *ngIf="loading" class="inline-block animate-pulse text-text-secondary">
-          Cargando cultivos...
-        </div>
-        <div *ngIf="error" class="text-red-600">{{ error }}</div>
+        <div *ngIf="loading" class="inline-block animate-pulse text-text-secondary">Cargando cultivos...</div>
+        <div *ngIf="error"   class="text-red-600">{{ error }}</div>
       </div>
     </ng-template>
 
@@ -48,7 +44,8 @@
         <h3 class="text-2xl font-semibold text-text-primary mb-4">{{ key }}</h3>
         <ul class="space-y-4">
           <li *ngFor="let c of grouped[key]" tabindex="0"
-              class="relative group overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-lg transition-all duration-200 transform hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50">
+              class="relative group overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-lg transition-all duration-200 transform hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50"
+              (click)="editarCultivo(c.id)">
             <div class="absolute -top-6 -right-6 w-32 h-32 bg-primary/10 rounded-full"></div>
             <div class="relative flex items-center justify-between">
               <div>
@@ -65,9 +62,7 @@
           </li>
         </ul>
       </div>
-      <div *ngIf="groupKeys.length === 0" class="text-center text-text-secondary py-12">
-        No hay cultivos registrados.
-      </div>
+      <div *ngIf="groupKeys.length === 0" class="text-center text-text-secondary py-12">No hay cultivos registrados.</div>
     </ng-container>
   </main>
 </div>

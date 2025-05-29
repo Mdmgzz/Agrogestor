@@ -1,8 +1,8 @@
-// src/app/features/cultivos/admin-cultivos.component.ts
+// src/app/features/tecnicoCultivo/tecnico-cultivo.component.ts
 import { Component, OnInit }                    from '@angular/core';
 import { CommonModule }                         from '@angular/common';
 import { FormsModule }                          from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule }                 from '@angular/router';
 import { CultivoService, Cultivo }              from '../../core/services/cultivo.service';
 
 interface CultivoConParcela extends Cultivo {
@@ -15,19 +15,17 @@ interface CultivoConParcela extends Cultivo {
 
 @Component({
   standalone: true,
-  selector: 'app-admin-cultivos',
+  selector: 'app-tecnico-cultivos',
   imports: [CommonModule, RouterModule, FormsModule],
-  templateUrl: './admin-cultivos.component.html',
+  templateUrl: './tecnico-cultivo.component.html',
 })
-export class AdminCultivosComponent implements OnInit {
-  parcelaId?: number;
+export class TecnicoCultivosComponent implements OnInit {
   cultivosAll: CultivoConParcela[] = [];
-  // agrupación
-  groupKeys: string[] = [];
-  grouped: Record<string, CultivoConParcela[]> = {};
+  groupKeys:    string[] = [];
+  grouped:      Record<string, CultivoConParcela[]> = {};
 
   loading = true;
-  error:    string | null = null;
+  error:   string | null = null;
 
   // filtros
   searchTerm = '';
@@ -36,25 +34,19 @@ export class AdminCultivosComponent implements OnInit {
 
   constructor(
     private svc:    CultivoService,
-    private route:  ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) this.parcelaId = +idParam;
-
     this.svc.getAll().subscribe({
       next: data => {
-        // casteamos a nuestro interface con parcela cargada
-        this.cultivosAll = (data as CultivoConParcela[])
-          .filter(c => this.parcelaId == null || c.parcela_id === this.parcelaId);
-
+        // data viene con parcela cargada en backend
+        this.cultivosAll = (data as CultivoConParcela[]);
         this.processGrouping();
         this.loading = false;
       },
       error: () => {
-        this.error = 'No se pudieron cargar los cultivos';
+        this.error   = 'Error al cargar cultivos';
         this.loading = false;
       }
     });
@@ -65,16 +57,14 @@ export class AdminCultivosComponent implements OnInit {
   }
 
   private processGrouping() {
-    // primero aplicamos filtros
     const term = this.searchTerm.trim().toLowerCase();
     const filtered = this.cultivosAll.filter(c => {
       if (term && !c.variedad.toLowerCase().includes(term)) return false;
-      if (this.startDate && c.fecha_siembra < this.startDate) return false;
-      if (this.endDate && c.fecha_siembra > this.endDate) return false;
+      if (this.startDate && c.fecha_siembra < this.startDate)    return false;
+      if (this.endDate   && c.fecha_siembra > this.endDate)      return false;
       return true;
     });
 
-    // agrupamos por "Parcela — Propietario"
     const groups: Record<string, CultivoConParcela[]> = {};
     for (const c of filtered) {
       const key = `${c.parcela.nombre} — ${c.parcela.propietario}`;
@@ -82,23 +72,15 @@ export class AdminCultivosComponent implements OnInit {
     }
 
     this.groupKeys = Object.keys(groups);
-    this.grouped  = groups;
+    this.grouped   = groups;
   }
 
   crearCultivo() {
-    if (this.parcelaId != null) {
-      this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId, 'cultivos', 'create']);
-    } else {
-      this.router.navigate(['/dashboard/admin/cultivos/create']);
-    }
+    this.router.navigate(['/dashboard/tecnico/cultivos/create']);
   }
 
   editarCultivo(id: number) {
-    if (this.parcelaId != null) {
-      this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId, 'cultivos', id, 'edit']);
-    } else {
-      this.router.navigate(['/dashboard/admin/cultivos', id, 'edit']);
-    }
+    this.router.navigate(['/dashboard/tecnico/cultivos', id, 'edit']);
   }
 
   eliminarCultivo(id: number) {
@@ -110,13 +92,5 @@ export class AdminCultivosComponent implements OnInit {
       },
       error: () => alert('Error al eliminar cultivo')
     });
-  }
-
-  volverParcela() {
-    if (this.parcelaId != null) {
-      this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId]);
-    } else {
-      this.router.navigate(['/dashboard/admin']);
-    }
   }
 }
