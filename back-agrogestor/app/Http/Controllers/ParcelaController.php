@@ -45,7 +45,6 @@ class ParcelaController extends Controller
             'nombre'       => 'required|string|max:100',
             'propietario'  => 'required|string|max:100',
             'superficie_ha'=> 'required|numeric',
-            'geojson'      => 'required|json',
         ]);
 
         if ($user->rol === 'TECNICO_AGRICOLA') {
@@ -93,9 +92,9 @@ class ParcelaController extends Controller
 
         $data = $request->validate([
             'usuario_id'   => 'sometimes|required|exists:usuarios,id',
+            'nombre'       => 'sometimes|required|string|max:100',
             'propietario'  => 'sometimes|required|string|max:100',
             'superficie_ha'=> 'sometimes|required|numeric',
-            'geojson'      => 'sometimes|required|json',
         ]);
 
         // Si es técnico, forzamos usuario_id

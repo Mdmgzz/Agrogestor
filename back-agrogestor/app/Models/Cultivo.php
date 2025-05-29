@@ -10,7 +10,10 @@ class Cultivo extends Model
     protected $fillable = [
         'parcela_id',
         'variedad',
-        'fecha_siembra'
+        'fecha_siembra',
+        'superficie_ha',
+        'latitud',
+        'longitud',
     ];
 
     /**

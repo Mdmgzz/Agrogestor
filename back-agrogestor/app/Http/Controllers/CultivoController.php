@@ -46,6 +46,9 @@ class CultivoController extends Controller
             'parcela_id'   => 'required|exists:parcelas,id',
             'variedad'     => 'required|string|max:100',
             'fecha_siembra'=> 'required|date',
+            'superficie_ha'=> 'required|numeric|min:0',
+            'latitud'      => 'nullable|numeric',
+            'longitud'     => 'nullable|numeric',
         ]);
 
         if ($user->rol === 'TECNICO_AGRICOLA') {
@@ -99,6 +102,9 @@ class CultivoController extends Controller
             'parcela_id'   => 'sometimes|required|exists:parcelas,id',
             'variedad'     => 'sometimes|required|string|max:100',
             'fecha_siembra'=> 'sometimes|required|date',
+            'superficie_ha' => 'sometimes|required|numeric|min:0',    
+            'latitud'       => 'sometimes|nullable|numeric',         
+            'longitud'      => 'sometimes|nullable|numeric',        
         ]);
 
         $cultivo->update($data);

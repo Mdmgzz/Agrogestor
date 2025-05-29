@@ -1,22 +1,23 @@
 // src/app/core/routes/app.routes.ts
 import { Routes } from '@angular/router';
 
-import { LandingComponent } from '../../features/landing/landing.component';
-import { LoginComponent } from '../../features/auth/login/login.component';
-import { DashboardComponent } from '../../features/dashboard/dashboard.component';
-import { ParcelasComponent } from '../../features/parcelas/parcelas.component';
-import { RegisterComponent } from '../../features/auth/Register/register.component';
-import { ForgotPasswordComponent } from '../../features/auth/ForgotPassword/forgot-password.component';
-import { AdminDashboardComponent } from '../../features/adminDashboard/admin-dashboard.component';
-import { AdminParcelasComponent } from '../../features/adminParcelas/admin-parcelas.component';
-import { AdminUsuariosComponent } from '../../features/adminUsuarios/admin-usuarios.component';
-import { AdminCultivosComponent } from '../../features/adminCultivos/admin-cultivos.component';
-import { AdminActividadesComponent } from '../../features/adminActividades/admin-actividades.component';
-import { TecnicoDashboardComponent } from '../../features/tecnicoDashboard/tecnico-dashboard.component';
-import { TecnicoParcelasComponent } from '../../features/tecnicoParcelas/tecnico-parcelas.component';
+import { LandingComponent }            from '../../features/landing/landing.component';
+import { LoginComponent }              from '../../features/auth/login/login.component';
+import { DashboardComponent }          from '../../features/dashboard/dashboard.component';
+import { RegisterComponent }           from '../../features/auth/Register/register.component';
+import { ForgotPasswordComponent }     from '../../features/auth/ForgotPassword/forgot-password.component';
+import { AdminDashboardComponent }     from '../../features/adminDashboard/admin-dashboard.component';
+import { AdminParcelasComponent }      from '../../features/adminParcelas/admin-parcelas.component';
+import { AdminUsuariosComponent }      from '../../features/adminUsuarios/admin-usuarios.component';
+import { AdminCultivosComponent }      from '../../features/adminCultivos/admin-cultivos.component';
+import { AdminCultivoCreateComponent } from '../../features/adminCultivos/admin-cultivos-create.component';
+import { AdminActividadesComponent }   from '../../features/adminActividades/admin-actividades.component';
+import { TecnicoDashboardComponent }   from '../../features/tecnicoDashboard/tecnico-dashboard.component';
+import { TecnicoParcelasComponent }    from '../../features/tecnicoParcelas/tecnico-parcelas.component';
 import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
+import { AdminParcelaCreateComponent }   from '../../features/adminParcelas/admin-parcela-create.component';
 
-import { AuthGuard } from '../services/auth.guard';
+import { AuthGuard }  from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
 
 export const routes: Routes = [
@@ -27,44 +28,19 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
 
-  //ruta de admin dashboard antes que la de usuario 
+  // Admin Dashboard
   {
     path: 'dashboard/admin',
     component: AdminDashboardComponent,
     canActivate: [AuthGuard, AdminGuard]
   },
+
+  // Técnico Dashboard
   {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
     pathMatch: 'full'
-  },
-
-  // Otras rutas protegidas
-  {
-    path: 'dashboard/parcelas',
-    component: ParcelasComponent,
-    canActivate: [AuthGuard]
-  },
-    {
-    path: 'dashboard/admin/parcelas',
-    component: AdminParcelasComponent,
-    canActivate: [ AuthGuard, AdminGuard ]
-  },
-    {
-    path: 'dashboard/admin/usuarios',
-    component: AdminUsuariosComponent,
-    canActivate: [ AuthGuard, AdminGuard ]
-  },
-     {
-    path: 'dashboard/admin/cultivos',
-    component: AdminCultivosComponent,
-    canActivate: [ AuthGuard, AdminGuard ]
-  },
-       {
-    path: 'dashboard/admin/actividades',
-    component: AdminActividadesComponent,
-    canActivate: [ AuthGuard, AdminGuard ]
   },
   {
     path: 'dashboard/tecnico',
@@ -82,9 +58,48 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
 
+  // Admin – Parcelas
+  {
+    path: 'dashboard/admin/parcelas',
+    component: AdminParcelasComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'dashboard/admin/parcelas/create',
+    component: AdminParcelaCreateComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
 
+// Listado global de cultivos
+  {
+    path: 'dashboard/admin/cultivos',
+    component: AdminCultivosComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  // Creación genérica de cultivo (sin :id)
+  {
+    path: 'dashboard/admin/cultivos/create',
+    component: AdminCultivoCreateComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'dashboard/admin/parcelas/:id/cultivos/create',
+    component: AdminCultivoCreateComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
 
-  
-  // Wildcard al final
+  // Admin – Usuarios y Actividades
+  {
+    path: 'dashboard/admin/usuarios',
+    component: AdminUsuariosComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'dashboard/admin/actividades',
+    component: AdminActividadesComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+
+  // Wildcard
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

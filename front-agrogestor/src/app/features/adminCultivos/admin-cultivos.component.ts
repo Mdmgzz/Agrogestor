@@ -1,9 +1,9 @@
 // src/app/features/cultivos/admin-cultivos.component.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CultivoService, Cultivo } from '../../core/services/cultivo.service';
-import { Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit }                   from '@angular/core';
+import { CommonModule }                        from '@angular/common';
+import { FormsModule }                         from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule }from '@angular/router';
+import { CultivoService, Cultivo }             from '../../core/services/cultivo.service';
 
 @Component({
   standalone: true,
@@ -12,26 +12,31 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './admin-cultivos.component.html',
 })
 export class AdminCultivosComponent implements OnInit {
+  parcelaId!: number;
   cultivosAll: Cultivo[] = [];
-  cultivos: Cultivo[] = [];
+  cultivos:    Cultivo[] = [];
 
   loading = true;
   error: string | null = null;
 
   // filtros
   searchTerm = '';
-  startDate: string = '';
-  endDate: string = '';
+  startDate  = '';
+  endDate    = '';
 
   constructor(
-    private svc: CultivoService,
+    private svc:   CultivoService,
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit() {
+    // Sacamos el parámetro :id de la URL
+    this.parcelaId = Number(this.route.snapshot.paramMap.get('id'));
+    // Cargamos todos y filtramos por parcelaId
     this.svc.getAll().subscribe({
       next: data => {
-        this.cultivosAll = data;
+        this.cultivosAll = data.filter(c => c.parcela_id === this.parcelaId);
         this.applyFilters();
         this.loading = false;
       },
@@ -45,12 +50,10 @@ export class AdminCultivosComponent implements OnInit {
   applyFilters() {
     this.cultivos = this.cultivosAll
       .filter(c => {
-        // búsqueda por variedad
         const term = this.searchTerm.trim().toLowerCase();
         if (term && !c.variedad.toLowerCase().includes(term)) {
           return false;
         }
-        // filtro por fecha
         if (this.startDate && c.fecha_siembra < this.startDate) {
           return false;
         }
@@ -63,11 +66,22 @@ export class AdminCultivosComponent implements OnInit {
   }
 
   crearCultivo() {
-    this.router.navigate(['/dashboard/cultivos/new']);
+    this.router.navigate([
+      '/dashboard/admin/parcelas',
+      this.parcelaId,
+      'cultivos',
+      'create'
+    ]);
   }
 
   editarCultivo(id: number) {
-    this.router.navigate([`/dashboard/cultivos/${id}/edit`]);
+    this.router.navigate([
+      '/dashboard/admin/parcelas',
+      this.parcelaId,
+      'cultivos',
+      id,
+      'edit'
+    ]);
   }
 
   eliminarCultivo(id: number) {
@@ -79,5 +93,9 @@ export class AdminCultivosComponent implements OnInit {
       },
       error: () => alert('Error al eliminar cultivo')
     });
+  }
+
+  volverParcela() {
+    this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId]);
   }
 }

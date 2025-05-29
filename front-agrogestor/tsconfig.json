@@ -1,5 +1,4 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+/* tsconfig.json */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -16,7 +15,13 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022"
+    "module": "ES2022",
+
+    // Añadido para que TS busque tipos en node_modules/@types
+    "typeRoots": ["node_modules/@types"],
+
+    // Carga explícita de los tipos de Leaflet
+    "types": ["leaflet"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

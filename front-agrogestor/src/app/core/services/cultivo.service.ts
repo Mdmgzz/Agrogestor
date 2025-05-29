@@ -8,7 +8,10 @@ export interface Cultivo {
   id: number;
   parcela_id: number;
   variedad: string;
-  fecha_siembra: string; // ISO
+  fecha_siembra: string;
+  superficie_ha: number;
+  latitud?: number;
+  longitud?: number;
   created_at?: string;
   updated_at?: string;
 }

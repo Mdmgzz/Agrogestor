@@ -12,7 +12,6 @@ class Parcela extends Model
         'nombre',
         'propietario',
         'superficie_ha',
-        'geojson'
     ];
 
     /**
