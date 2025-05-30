@@ -13,50 +13,48 @@ class ActividadController extends Controller
      * - TECNICO_AGRICOLA ve solo las de sus propias parcelas.
      */
     public function index(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        if ($user->rol === 'TECNICO_AGRICOLA') {
-            return Actividad::with('parcela', 'usuario', 'adjuntos')
-                ->where('usuario_id', $user->id)
-                ->get();
-        }
-
-        // ADMINISTRADOR e INSPECTOR ven todo
-        return Actividad::with('parcela', 'usuario', 'adjuntos')->get();
+    if ($user->rol === 'TECNICO_AGRICOLA') {
+        // Solo cultivos del técnico
+        return Actividad::with('cultivo.parcela')
+            ->whereHas('cultivo.parcela', fn($q) => $q->where('usuario_id', $user->id))
+            ->get();
     }
 
-    /**
-     * POST /api/actividades
-     * - ADMINISTRADOR puede crear cualquier actividad.
-     * - TECNICO_AGRICOLA solo puede crear actividades para sus parcelas.
-     * - INSPECTOR no puede crear.
-     */
-    public function store(Request $request)
-    {
-        $user = $request->user();
+    return Actividad::with('cultivo.parcela', 'usuario')->get();
+}
 
-        if ($user->rol === 'INSPECTOR') {
-            abort(403, 'No tienes permiso para crear actividades.');
-        }
+public function store(Request $request)
+{
+    $user = $request->user();
 
-        $data = $request->validate([
-            'parcela_id'      => 'required|exists:parcelas,id',
-            'usuario_id'      => 'required|exists:usuarios,id',
-            'tipo_actividad'  => 'required|in:tratamiento,fertilizacion,riego,siembra,cultural',
-            'fecha_actividad' => 'required|date',
-            'detalles'        => 'required|json',
-        ]);
-
-        if ($user->rol === 'TECNICO_AGRICOLA') {
-            // Solo permitir crear con su propio usuario y parcela
-            if ($data['usuario_id'] !== $user->id) {
-                abort(403, 'No puedes crear actividades para otro usuario.');
-            }
-        }
-
-        return Actividad::create($data);
+    if ($user->rol === 'INSPECTOR') {
+        abort(403, 'No tienes permiso para crear actividades.');
     }
+
+    $data = $request->validate([
+        'usuario_id'      => 'required|exists:usuarios,id',
+        'cultivo_id'      => 'required|exists:cultivos,id',
+        'tipo_actividad'  => 'required|string|max:100',
+        'fecha_actividad' => 'required|date',
+        'detalles'        => 'nullable|json',
+    ]);
+
+    if ($user->rol === 'TECNICO_AGRICOLA') {
+        // Verificar que el cultivo pertenece a una parcela del técnico
+        $pertenece = $user->parcelas()
+            ->whereHas('cultivos', fn($q) => $q->where('id', $data['cultivo_id']))
+            ->exists();
+
+        if (! $pertenece) {
+            abort(403, 'No puedes crear actividades en cultivos ajenos.');
+        }
+    }
+
+    return Actividad::create($data);
+}
 
     /**
      * GET /api/actividades/{actividad}

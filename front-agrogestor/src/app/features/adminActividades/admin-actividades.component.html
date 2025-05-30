@@ -16,7 +16,7 @@
       <h1 class="text-2xl font-extrabold text-white">Gestión de Actividades</h1>
     </div>
     <div class="flex space-x-4">
-      <button (click)="crearActividad()"
+      <button routerLink="/dashboard/admin/actividades/create"
               class="flex items-center space-x-2 px-4 py-2 bg-primary/80 hover:bg-primary text-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
              viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +71,7 @@
             <div>
               <p class="text-2xl font-extrabold text-text-primary">{{ a.tipo_actividad }}</p>
               <p class="text-sm text-text-secondary mt-1">Fecha: {{ a.fecha_actividad | date:'mediumDate' }}</p>
-              <p class="text-sm text-text-secondary">Parcela: {{ a.parcela?.nombre }} — {{ a.parcela?.propietario }}</p>
+              <p class="text-sm text-text-secondary">Parcela: {{ a.parcela.nombre }} — {{ a.parcela.propietario }}</p>
               <p class="text-sm text-text-secondary mt-1">Detalles: {{ a.detalles }}</p>
             </div>
             <div class="flex space-x-2">

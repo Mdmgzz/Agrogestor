@@ -17,9 +17,15 @@ export interface Parcela {
   propietario: string;
   superficie_ha: number;
   geojson: any;
-  usuario: Usuario;
   created_at?: string;
   updated_at?: string;
+  usuario: {               
+    id: number;
+    nombre: string;
+    apellidos: string;
+    correo: string;
+    rol: string;
+  };
 }
 
 @Injectable({

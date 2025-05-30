@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Parcela } from './parcela.service';
+import { Cultivo } from './cultivo.service';
+
 
 export interface Usuario {
   id: number;
@@ -10,21 +13,17 @@ export interface Usuario {
   apellidos: string;
 }
 
-export interface Parcela {
-  id: number;
-  propietario: string;
-}
-
 export interface Actividad {
   id: number;
-  parcela_id: number;
   usuario_id: number;
+  cultivo_id: number;
   tipo_actividad: string;
-  fecha_actividad: string;  // ISO date string
-  detalles: string;
-  usuario?: Usuario;
-  parcela?: Parcela;
+  fecha_actividad: string;
+  detalles: any;        // json
+  usuario?: { id: number; nombre: string; apellidos: string };
+  cultivo?: Cultivo;    // incluye parcela_id, variedad, etc.
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +33,7 @@ export class ActividadService {
 
   constructor(private http: HttpClient) {}
 
-  /** Lista todas las actividades (incluyendo relaciones si el backend las envía) */
+  /** Lista todas las actividades */
   getAll(): Observable<Actividad[]> {
     return this.http.get<Actividad[]>(this.baseUrl);
   }

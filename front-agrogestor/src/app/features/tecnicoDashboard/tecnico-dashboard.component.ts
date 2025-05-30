@@ -1,4 +1,4 @@
-// src/app/features/tecnico-dashboard/tecnico-dashboard.component.ts
+// src/app/features/tecnicoDashboard/tecnico-dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParcelaService } from '../../core/services/parcela.service';
@@ -36,11 +36,16 @@ export class TecnicoDashboardComponent implements OnInit {
         actividades: this.actividadSvc.getAll().pipe(catchError(() => of([]))),
       })),
       map(({ parcelas, cultivos, actividades }) => {
-        const ids = parcelas.map(p => p.id);
+        const parcelaIds = parcelas.map(p => p.id);
+        const cultivosCount = cultivos.filter(c => parcelaIds.includes(c.parcela_id)).length;
+        const actividadesCount = actividades.filter(a =>
+          // filtramos según el cultivo asociado
+          Boolean(a.cultivo) && parcelaIds.includes(a.cultivo!.parcela_id)
+        ).length;
         return {
           parcelas: parcelas.length,
-          cultivos: cultivos.filter(c => ids.includes(c.parcela_id)).length,
-          actividades: actividades.filter(a => ids.includes(a.parcela_id)).length
+          cultivos: cultivosCount,
+          actividades: actividadesCount
         };
       }),
       catchError(() => {

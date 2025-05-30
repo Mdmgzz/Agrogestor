@@ -14,6 +14,7 @@ import { AdminActividadesComponent }   from '../../features/adminActividades/adm
 import { TecnicoDashboardComponent }   from '../../features/tecnicoDashboard/tecnico-dashboard.component';
 import { TecnicoParcelasComponent }    from '../../features/tecnicoParcelas/tecnico-parcelas.component';
 import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
+import { AdminActividadesCreateComponent } from '../../features/adminActividades/admin-actividades-create.component';
 import { AdminParcelaCreateComponent }   from '../../features/adminParcelas/admin-parcela-create.component';
 import { TecnicoCultivoCreateComponent }   from '../../features/tecnicoCultivo/tecnico-cultivo-create.component';
 import { TecnicoCultivosComponent }    from '../../features/tecnicoCultivo/tecnico-cultivo.component';
@@ -91,6 +92,11 @@ export const routes: Routes = [
   {
     path: 'dashboard/admin/actividades',
     component: AdminActividadesComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'dashboard/admin/actividades/create',
+    component: AdminActividadesCreateComponent, 
     canActivate: [AuthGuard, AdminGuard]
   },
   // Técnico – Cultivos
