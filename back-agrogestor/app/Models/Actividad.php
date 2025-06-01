@@ -1,5 +1,8 @@
 <?php
 
+// App/Models/Actividad.php
+
+// App/Models/Actividad.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 class Actividad extends Model
 {
     protected $table = 'actividades';
-
     protected $fillable = [
         'usuario_id',
         'cultivo_id',
@@ -25,4 +27,10 @@ class Actividad extends Model
     {
         return $this->belongsTo(Cultivo::class);
     }
+
+    public function adjuntos()
+    {
+        return $this->hasMany(Adjunto::class, 'actividad_id');
+    }
+
 }

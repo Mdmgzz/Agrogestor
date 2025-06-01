@@ -1,14 +1,13 @@
-// src/app/features/actividades/admin-actividades-create.component.ts
-import { Component, OnInit }                     from '@angular/core';
-import { CommonModule }                          from '@angular/common';
-import { FormsModule, NgForm }                   from '@angular/forms';
-import { Router, RouterModule }                  from '@angular/router';
+// src/app/features/adminActividades/admin-actividades-create.component.ts
+import { Component, OnInit }   from '@angular/core';
+import { CommonModule }        from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router, RouterModule }from '@angular/router';
 
-import { ActividadService }                      from '../../core/services/actividad.service';
-import { ParcelaService, Parcela }               from '../../core/services/parcela.service';
-import { CultivoService, Cultivo }               from '../../core/services/cultivo.service';
-import { UserService, Usuario }                  from '../../core/services/user.service';
-import { AdjuntoService }                        from '../../core/services/adjunto.service';
+import { ActividadService }    from '../../core/services/actividad.service';
+import { ParcelaService }      from '../../core/services/parcela.service';
+import { CultivoService }      from '../../core/services/cultivo.service';
+import { UserService }         from '../../core/services/user.service';
 
 @Component({
   standalone: true,
@@ -17,11 +16,12 @@ import { AdjuntoService }                        from '../../core/services/adjun
   templateUrl: './admin-actividades-create.component.html',
 })
 export class AdminActividadesCreateComponent implements OnInit {
-  usuarios: Usuario[]        = [];
-  parcelas: Parcela[]        = [];
-  cultivosAll: Cultivo[]     = [];
-  parcelasFiltradas: Parcela[] = [];
-  cultivosFiltrados: Cultivo[] = [];
+  usuarios: any[]       = [];
+  parcelas: any[]       = [];
+  cultivosAll: any[]    = [];
+
+  parcelasFiltradas: any[] = [];
+  cultivosFiltrados: any[] = [];
 
   usuarioId?: number;
   parcelaId?: number;
@@ -31,9 +31,7 @@ export class AdminActividadesCreateComponent implements OnInit {
   fecha_actividad?: string;
   detalles = '';
 
-  // Para los archivos seleccionados
-  selectedFiles?: FileList;
-
+  adjuntos: FileList | null = null;
   loading = false;
   error: string | null = null;
 
@@ -42,19 +40,23 @@ export class AdminActividadesCreateComponent implements OnInit {
     private parcelaSvc: ParcelaService,
     private cultivoSvc: CultivoService,
     private actSvc:     ActividadService,
-    private adjuntoSvc: AdjuntoService,
     private router:     Router
   ) {}
 
   ngOnInit(): void {
+    // Cargar usuarios
     this.usuarioSvc.getAll().subscribe({
       next: list => this.usuarios = list,
       error: () => this.error = 'No se pudieron cargar usuarios'
     });
+
+    // Cargar parcelas (todas, luego filtramos por usuario)
     this.parcelaSvc.getAll().subscribe({
       next: list => this.parcelas = list,
       error: () => this.error = 'No se pudieron cargar parcelas'
     });
+
+    // Cargar cultivos (todos, luego filtramos por parcela)
     this.cultivoSvc.getAll().subscribe({
       next: list => this.cultivosAll = list,
       error: () => this.error = 'No se pudieron cargar cultivos'
@@ -62,6 +64,7 @@ export class AdminActividadesCreateComponent implements OnInit {
   }
 
   onUserChange(): void {
+    // Si cambiamos usuario, borramos selecciones previas
     this.parcelaId = undefined;
     this.cultivoId = undefined;
     this.parcelasFiltradas = this.parcelas.filter(
@@ -71,6 +74,7 @@ export class AdminActividadesCreateComponent implements OnInit {
   }
 
   onParcelaChange(): void {
+    // Si cambiamos parcela, borramos cultivo y recalculamos cultivos filtrados
     this.cultivoId = undefined;
     this.cultivosFiltrados = this.cultivosAll.filter(
       c => c.parcela_id === this.parcelaId
@@ -79,10 +83,15 @@ export class AdminActividadesCreateComponent implements OnInit {
 
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedFiles = input.files || undefined;
+    if (input.files && input.files.length > 0) {
+      this.adjuntos = input.files;
+    } else {
+      this.adjuntos = null;
+    }
   }
 
   crearActividad(form: NgForm): void {
+    // Validar campos obligatorios
     if (
       form.invalid ||
       !this.usuarioId ||
@@ -98,30 +107,41 @@ export class AdminActividadesCreateComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.actSvc.create({
-      usuario_id:      this.usuarioId,
-      cultivo_id:      this.cultivoId,
-      tipo_actividad:  this.tipo_actividad,
-      fecha_actividad: this.fecha_actividad,
-      detalles:        JSON.stringify({ texto: this.detalles })
-    }).subscribe({
-      next: actividad => {
-        // Si hay archivos, los subimos tras crear
-        if (this.selectedFiles && this.selectedFiles.length) {
-          this.adjuntoSvc.upload(actividad.id, this.selectedFiles).subscribe({
-            next: () => this.router.navigate(['/dashboard/admin/actividades']),
-            error: () => {
-              this.loading = false;
-              this.error = 'Actividad creada pero fallo al subir adjuntos.';
-            }
-          });
-        } else {
-          this.router.navigate(['/dashboard/admin/actividades']);
-        }
+    // Construimos un FormData para enviar adjuntos y campos JSON
+    const formData = new FormData();
+    formData.append('usuario_id',      this.usuarioId!.toString());
+    formData.append('cultivo_id',      this.cultivoId!.toString());
+    formData.append('tipo_actividad',  this.tipo_actividad);
+    formData.append('fecha_actividad', this.fecha_actividad!);
+
+    // Convertimos “detalles” a JSON válido: { "texto": "lo que haya escrito el usuario" }
+    const detallesJson = JSON.stringify({ texto: this.detalles });
+    formData.append('detalles', detallesJson);
+
+    // Si hay adjuntos, los agregamos al FormData
+    if (this.adjuntos) {
+      for (let i = 0; i < this.adjuntos.length; i++) {
+        // “adjuntos[]” porque en el backend manejaremos un array de archivos
+        formData.append('adjuntos[]', this.adjuntos[i], this.adjuntos[i].name);
+      }
+    }
+
+    // Llamada al servicio que envía multipart/form-data
+    this.actSvc.createConAdjuntos(formData).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/dashboard/admin/actividades']);
       },
       error: err => {
         this.loading = false;
-        this.error = err.error?.message || 'Error al crear la actividad';
+        // Si el backend va a devolver validaciones, podemos mostrar err.error.errors
+        if (err.status === 422 && err.error?.errors) {
+          // Por ejemplo, obtenemos el primer mensaje de validación:
+          const mensajes = Object.values(err.error.errors).flat();
+          this.error = mensajes.length ? (mensajes[0] as string) : 'Error de validación';
+        } else {
+          this.error = err.error?.message || 'Error al crear la actividad';
+        }
       }
     });
   }

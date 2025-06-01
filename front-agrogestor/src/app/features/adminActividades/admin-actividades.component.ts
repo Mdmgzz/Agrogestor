@@ -1,8 +1,7 @@
-// src/app/features/actividades/admin-actividades.component.ts
 import { Component, OnInit }                    from '@angular/core';
 import { CommonModule }                         from '@angular/common';
 import { FormsModule }                          from '@angular/forms';
-import { Router, RouterModule }                 from '@angular/router';
+import { RouterModule }                         from '@angular/router';
 import { ActividadService, Actividad }          from '../../core/services/actividad.service';
 
 @Component({
@@ -23,10 +22,7 @@ export class AdminActividadesComponent implements OnInit {
   startDate  = '';
   endDate    = '';
 
-  constructor(
-    private svc:    ActividadService,
-    private router: Router
-  ) {}
+  constructor(private svc: ActividadService) {}
 
   ngOnInit() {
     this.svc.getAll().subscribe({
@@ -52,24 +48,5 @@ export class AdminActividadesComponent implements OnInit {
         return true;
       })
       .sort((a, b) => a.fecha_actividad.localeCompare(b.fecha_actividad));
-  }
-
-  crearActividad() {
-    this.router.navigate(['/dashboard/admin/actividades/create']);
-  }
-
-  editarActividad(id: number) {
-    this.router.navigate(['/dashboard/admin/actividades', id, 'edit']);
-  }
-
-  eliminarActividad(id: number) {
-    if (!confirm('¿Eliminar esta actividad?')) return;
-    this.svc.delete(id).subscribe({
-      next: () => {
-        this.actividades = this.actividades.filter(a => a.id !== id);
-        this.applyFilters();
-      },
-      error: () => alert('Error al eliminar actividad')
-    });
   }
 }

@@ -20,6 +20,7 @@ import { TecnicoCultivoCreateComponent }   from '../../features/tecnicoCultivo/t
 import { TecnicoCultivosComponent }    from '../../features/tecnicoCultivo/tecnico-cultivo.component';
 import { AuthGuard }  from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
+import { ActividadDetailComponent } from '../../features/actividades/actividad-detail.component';
 
 export const routes: Routes = [
   // Pública
@@ -27,7 +28,7 @@ export const routes: Routes = [
   { path: 'landing', redirectTo: '', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent }, 
 
   // Admin Dashboard
   {
@@ -110,6 +111,11 @@ export const routes: Routes = [
     component: TecnicoCultivoCreateComponent,
     canActivate: [AuthGuard]
   },
+{
+  path: 'dashboard/admin/actividades/:id',
+  component: ActividadDetailComponent,
+  canActivate: [AuthGuard, AdminGuard]
+},
 
   // Wildcard
   { path: '**', redirectTo: '', pathMatch: 'full' },

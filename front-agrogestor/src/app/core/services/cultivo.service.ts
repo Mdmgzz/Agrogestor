@@ -1,8 +1,15 @@
 // src/app/core/services/cultivo.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+export interface ParcelaMin {
+  id: number;
+  nombre: string;
+  propietario: string;
+}
 
 export interface Cultivo {
   id: number;
@@ -12,8 +19,8 @@ export interface Cultivo {
   superficie_ha: number;
   latitud?: number;
   longitud?: number;
-  created_at?: string;
-  updated_at?: string;
+  // Añadimos la relación para que TypeScript lo reconozca:
+  parcela?: ParcelaMin;
 }
 
 @Injectable({

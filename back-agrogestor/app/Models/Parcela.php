@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Parcela extends Model
 {
     protected $table = 'parcelas';
+
     protected $fillable = [
         'usuario_id',
         'nombre',
@@ -31,10 +32,13 @@ class Parcela extends Model
     }
 
     /**
-     * La parcela puede tener muchas actividades.
+     * La parcela puede tener muchas actividades (si decides guardar `parcela_id` en actividades).
+     * En este diseño, las actividades están ligadas al cultivo, pero si más adelante
+     * quieres filtrar actividades por parcela directa:
+     *
+     * public function actividades()
+     * {
+     *     return $this->hasMany(Actividad::class, 'parcela_id');
+     * }
      */
-    public function actividades()
-    {
-        return $this->hasMany(Actividad::class, 'parcela_id');
-    }
 }
