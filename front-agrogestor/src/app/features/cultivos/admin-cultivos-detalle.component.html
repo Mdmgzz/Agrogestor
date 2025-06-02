@@ -1,7 +1,7 @@
 <!-- src/app/features/adminCultivos/admin-cultivos-detalle.component.html -->
 
 <div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
-  <!-- Navbar (igual que antes) -->
+  <!-- NAVBAR -->
   <nav
     class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50
            flex items-center justify-between px-6 py-4 sm:px-8 shadow-md"
@@ -36,10 +36,10 @@
       <div *ngIf="error" class="text-center text-red-600 mb-6">{{ error }}</div>
 
       <div class="flex flex-col lg:flex-row gap-6">
-        <!-- TARJETA IZQUIERDA: Formulario + Mapa -->
+        <!-- TARJETA IZQUIERDA (3/5 ancho) -->
         <div class="w-full lg:w-3/5 bg-white rounded-2xl p-4 lg:p-6 shadow-lg space-y-4">
           <form (ngSubmit)="guardarCambios(form)" #form="ngForm" novalidate>
-            <!-- Parcela -->
+            <!-- Campo PARCELA -->
             <div class="mb-3">
               <label class="block text-base font-semibold text-text-primary mb-1">Parcela</label>
               <select
@@ -59,7 +59,7 @@
               </div>
             </div>
 
-            <!-- Variedad -->
+            <!-- Campo VARIEDAD -->
             <div class="mb-3">
               <label class="block text-base font-semibold text-text-primary mb-1">Variedad</label>
               <input
@@ -75,7 +75,7 @@
               </div>
             </div>
 
-            <!-- Fecha de Siembra -->
+            <!-- Campo FECHA DE SIEMBRA -->
             <div class="mb-3">
               <label class="block text-base font-semibold text-text-primary mb-1">Fecha de Siembra</label>
               <input
@@ -91,7 +91,7 @@
               </div>
             </div>
 
-            <!-- Superficie (ha) -->
+            <!-- Campo SUPERFICIE (ha) -->
             <div class="mb-3">
               <label class="block text-base font-semibold text-text-primary mb-1">Superficie (ha)</label>
               <input
@@ -107,10 +107,15 @@
               </div>
             </div>
 
-            <!-- Mapa interactivo -->
+            <!-- Ubicación en el mapa (siempre existe, pero lo ocultamos con [hidden]) -->
             <div class="mb-3">
               <label class="block text-base font-semibold text-text-primary mb-1">Ubicación en el mapa</label>
-              <div id="map" class="w-full h-48 lg:h-56 rounded-lg border border-gray-300 overflow-hidden mb-2"></div>
+              <!-- Este DIV SIEMPRE está en el DOM. Cuando mapaExpandido=true, simplemente está oculto. -->
+              <div
+                id="map"
+                [hidden]="mapaExpandido"
+                class="w-full h-48 lg:h-56 rounded-lg border border-gray-300 overflow-hidden mb-2"
+              ></div>
               <button
                 type="button"
                 (click)="abrirMapaFullscreen()"
@@ -120,7 +125,7 @@
               </button>
             </div>
 
-            <!-- Botones de acción -->
+            <!-- BOTONES DE ACCIÓN -->
             <div class="flex justify-end space-x-2 lg:space-x-3 mt-2">
               <button
                 type="button"
@@ -149,7 +154,7 @@
           </form>
         </div>
 
-        <!-- TARJETA DERECHA: Actividades asociadas -->
+        <!-- TARJETA DERECHA: Actividades asociadas (2/5 ancho) -->
         <div class="w-full lg:w-2/5 bg-white/20 backdrop-blur-lg rounded-2xl p-4 lg:p-6">
           <h2 class="text-2xl font-bold text-text-primary mb-4">Actividades asociadas</h2>
           <ng-container *ngIf="actividades.length > 0; else noActs">
@@ -184,27 +189,43 @@
     </ng-template>
   </main>
 
-  <!-- MODAL: Mapa “contenedor” (80 % ancho × 70 % alto) -->
+  <!-- MODAL: Mapa full-screen -->
   <ng-container *ngIf="mapaExpandido">
-    <div class="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <!-- Contenedor del modal -->
+    <div
+      class="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      (click)="cerrarMapa()"
+    >
       <div
         class="relative bg-white rounded-2xl overflow-hidden shadow-xl"
         style="width: 80vw; height: 70vh;"
+        (click)="$event.stopPropagation()"
       >
-        <!-- Botón Cerrar en esquina -->
-        <button
-          (click)="cerrarMapa()"
-          class="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full p-2 shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none"
-               viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <!-- Aquí el div que alberga el mapa a media pantalla -->
-        <div id="mapFull" class="w-full h-full"></div>
+        <!-- BOTONES “Guardar” y “Cerrar” fuera del mapa, con z-index alto -->
+        <div class="absolute top-3 right-3 flex space-x-2 z-50">
+          <!-- Botón Guardar -->
+          <button
+            (click)="guardarUbicacion()"
+            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
+          >
+            Guardar
+          </button>
+          <!-- Botón Cerrar -->
+          <button
+            (click)="cerrarMapa()"
+            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+          >
+            Cerrar
+          </button>
+        </div>
+
+        <!-- CONTENEDOR DEL MAPA (z-index más bajo) -->
+        <div class="absolute inset-0 z-10">
+          <app-full-screen-map
+            [lat]="lat!"
+            [lng]="lng!"
+            (coordsChanged)="onCoordsChanged($event)"
+          ></app-full-screen-map>
+        </div>
       </div>
     </div>
   </ng-container>
