@@ -1,4 +1,5 @@
-// src/app/features/cultivos/admin-cultivos.component.ts
+// src/app/features/adminCultivos/admin-cultivos.component.ts
+
 import { Component, OnInit }                    from '@angular/core';
 import { CommonModule }                         from '@angular/common';
 import { FormsModule }                          from '@angular/forms';
@@ -22,7 +23,7 @@ interface CultivoConParcela extends Cultivo {
 export class AdminCultivosComponent implements OnInit {
   parcelaId?: number;
   cultivosAll: CultivoConParcela[] = [];
-  // agrupación
+  // Para agrupación
   groupKeys: string[] = [];
   grouped: Record<string, CultivoConParcela[]> = {};
 
@@ -46,7 +47,7 @@ export class AdminCultivosComponent implements OnInit {
 
     this.svc.getAll().subscribe({
       next: data => {
-        // casteamos a nuestro interface con parcela cargada
+        // Solo incluir cultivos de la parcela si existe parámetro id
         this.cultivosAll = (data as CultivoConParcela[])
           .filter(c => this.parcelaId == null || c.parcela_id === this.parcelaId);
 
@@ -65,7 +66,7 @@ export class AdminCultivosComponent implements OnInit {
   }
 
   private processGrouping() {
-    // primero aplicamos filtros
+    // Primero aplicamos filtros
     const term = this.searchTerm.trim().toLowerCase();
     const filtered = this.cultivosAll.filter(c => {
       if (term && !c.variedad.toLowerCase().includes(term)) return false;
@@ -74,7 +75,7 @@ export class AdminCultivosComponent implements OnInit {
       return true;
     });
 
-    // agrupamos por "Parcela — Propietario"
+    // Agrupamos por "Parcela — Propietario"
     const groups: Record<string, CultivoConParcela[]> = {};
     for (const c of filtered) {
       const key = `${c.parcela.nombre} — ${c.parcela.propietario}`;
@@ -90,14 +91,6 @@ export class AdminCultivosComponent implements OnInit {
       this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId, 'cultivos', 'create']);
     } else {
       this.router.navigate(['/dashboard/admin/cultivos/create']);
-    }
-  }
-
-  editarCultivo(id: number) {
-    if (this.parcelaId != null) {
-      this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId, 'cultivos', id, 'edit']);
-    } else {
-      this.router.navigate(['/dashboard/admin/cultivos', id, 'edit']);
     }
   }
 

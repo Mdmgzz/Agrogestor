@@ -1,4 +1,5 @@
-<!-- src/app/features/cultivos/admin-cultivos.component.html -->
+<!-- src/app/features/adminCultivos/admin-cultivos.component.html -->
+
 <div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
   <nav class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50 flex items-center justify-between px-8 py-4 shadow-md">
     <div class="flex items-center space-x-4">
@@ -21,7 +22,7 @@
   </nav>
 
   <main class="flex-1 max-w-7xl mx-auto py-16 px-6">
-    <!-- filtros idénticos -->
+    <!-- Filtros -->
     <div class="flex flex-col sm:flex-row gap-4 mb-8">
       <input type="text" placeholder="Buscar variedad..."
              [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()"
@@ -47,15 +48,21 @@
       <div *ngFor="let key of groupKeys" class="mb-10">
         <h3 class="text-2xl font-semibold text-text-primary mb-4">{{ key }}</h3>
         <ul class="space-y-4">
-          <li *ngFor="let c of grouped[key]" tabindex="0"
-              class="relative group overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-lg transition-all duration-200 transform hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50">
+          <li *ngFor="let c of grouped[key]"
+              [routerLink]="['/dashboard/admin/cultivos', c.id]"
+              tabindex="0"
+              class="relative group cursor-pointer overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-lg transition-all duration-200 transform hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-primary/50">
+            <!-- Círculo decorativo -->
             <div class="absolute -top-6 -right-6 w-32 h-32 bg-primary/10 rounded-full"></div>
+
+            <!-- Contenido de la tarjeta -->
             <div class="relative flex items-center justify-between">
               <div>
                 <p class="text-2xl font-extrabold text-text-primary">{{ c.variedad }}</p>
                 <p class="text-sm text-text-secondary mt-1">Siembra: {{ c.fecha_siembra | date:'mediumDate' }}</p>
                 <p class="text-sm text-text-secondary">Superficie: {{ c.superficie_ha }} ha</p>
               </div>
+              <!-- Flecha decorativa -->
               <div class="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -65,6 +72,7 @@
           </li>
         </ul>
       </div>
+
       <div *ngIf="groupKeys.length === 0" class="text-center text-text-secondary py-12">
         No hay cultivos registrados.
       </div>

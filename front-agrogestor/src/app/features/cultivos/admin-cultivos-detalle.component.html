@@ -1,0 +1,211 @@
+<!-- src/app/features/adminCultivos/admin-cultivos-detalle.component.html -->
+
+<div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
+  <!-- Navbar (igual que antes) -->
+  <nav
+    class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50
+           flex items-center justify-between px-6 py-4 sm:px-8 shadow-md"
+  >
+    <div class="flex items-center space-x-4">
+      <a
+        (click)="volver()"
+        class="flex items-center space-x-2 text-white hover:text-white/80 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 19l-7-7 7-7" />
+        </svg>
+        <span class="font-semibold uppercase tracking-wide">Volver</span>
+      </a>
+      <img src="/assets/Agrogestor_sinTexto.png" alt="Logo Agrogestor" class="h-10 w-auto object-contain" />
+      <h1 class="text-2xl font-extrabold text-white uppercase tracking-wide">Detalle de Cultivo</h1>
+    </div>
+  </nav>
+
+  <main class="flex-1 max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Spinner mientras carga -->
+    <ng-container *ngIf="loading; else contenidoBlock">
+      <div class="text-center py-12">
+        <div class="inline-block animate-pulse text-text-secondary">Cargando cultivo...</div>
+      </div>
+    </ng-container>
+
+    <ng-template #contenidoBlock>
+      <!-- Mensaje de error general -->
+      <div *ngIf="error" class="text-center text-red-600 mb-6">{{ error }}</div>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- TARJETA IZQUIERDA: Formulario + Mapa -->
+        <div class="w-full lg:w-3/5 bg-white rounded-2xl p-4 lg:p-6 shadow-lg space-y-4">
+          <form (ngSubmit)="guardarCambios(form)" #form="ngForm" novalidate>
+            <!-- Parcela -->
+            <div class="mb-3">
+              <label class="block text-base font-semibold text-text-primary mb-1">Parcela</label>
+              <select
+                name="parcelaId"
+                [(ngModel)]="parcelaId"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              >
+                <option [ngValue]="null" disabled class="text-gray-500">-- Selecciona Parcela --</option>
+                <option *ngFor="let p of parcelasFiltradas" [ngValue]="p.id">
+                  {{ p.nombre }} — {{ p.propietario }}
+                </option>
+              </select>
+              <div *ngIf="form.submitted && !parcelaId" class="text-red-600 text-sm mt-1">
+                Debes elegir una parcela.
+              </div>
+            </div>
+
+            <!-- Variedad -->
+            <div class="mb-3">
+              <label class="block text-base font-semibold text-text-primary mb-1">Variedad</label>
+              <input
+                type="text"
+                name="variedad"
+                [(ngModel)]="variedad"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              />
+              <div *ngIf="form.submitted && !variedad" class="text-red-600 text-sm mt-1">
+                La variedad es obligatoria.
+              </div>
+            </div>
+
+            <!-- Fecha de Siembra -->
+            <div class="mb-3">
+              <label class="block text-base font-semibold text-text-primary mb-1">Fecha de Siembra</label>
+              <input
+                type="date"
+                name="fecha_siembra"
+                [(ngModel)]="fecha_siembra"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              />
+              <div *ngIf="form.submitted && !fecha_siembra" class="text-red-600 text-sm mt-1">
+                La fecha es obligatoria.
+              </div>
+            </div>
+
+            <!-- Superficie (ha) -->
+            <div class="mb-3">
+              <label class="block text-base font-semibold text-text-primary mb-1">Superficie (ha)</label>
+              <input
+                type="text"
+                name="superficie_ha"
+                [(ngModel)]="superficie_ha"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              />
+              <div *ngIf="form.submitted && !superficie_ha" class="text-red-600 text-sm mt-1">
+                Indica la superficie en hectáreas.
+              </div>
+            </div>
+
+            <!-- Mapa interactivo -->
+            <div class="mb-3">
+              <label class="block text-base font-semibold text-text-primary mb-1">Ubicación en el mapa</label>
+              <div id="map" class="w-full h-48 lg:h-56 rounded-lg border border-gray-300 overflow-hidden mb-2"></div>
+              <button
+                type="button"
+                (click)="abrirMapaFullscreen()"
+                class="text-sm font-semibold text-primary hover:text-primary-dark transition focus:outline-none focus:underline"
+              >
+                Expandir
+              </button>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex justify-end space-x-2 lg:space-x-3 mt-2">
+              <button
+                type="button"
+                (click)="eliminarCultivo()"
+                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Eliminar
+              </button>
+              <button
+                type="submit"
+                [disabled]="loading"
+                class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg shadow hover:bg-primary-dark transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                {{ loading ? 'Guardando…' : 'Guardar' }}
+              </button>
+              <button
+                type="button"
+                (click)="volver()"
+                class="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium bg-white rounded-lg hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+              >
+                Volver
+              </button>
+            </div>
+
+            <div *ngIf="error" class="mt-3 text-red-600">{{ error }}</div>
+          </form>
+        </div>
+
+        <!-- TARJETA DERECHA: Actividades asociadas -->
+        <div class="w-full lg:w-2/5 bg-white/20 backdrop-blur-lg rounded-2xl p-4 lg:p-6">
+          <h2 class="text-2xl font-bold text-text-primary mb-4">Actividades asociadas</h2>
+          <ng-container *ngIf="actividades.length > 0; else noActs">
+            <ul class="space-y-3">
+              <li
+                *ngFor="let act of actividades"
+                class="flex items-center justify-between bg-white/50 rounded-lg p-3 hover:bg-white/60 transition focus-within:ring-2 focus-within:ring-primary"
+              >
+                <div>
+                  <p class="font-medium text-text-primary text-sm">{{ act.tipo_actividad | titlecase }}</p>
+                  <p class="text-xs text-text-secondary">Fecha: {{ act.fecha_actividad | date:'shortDate' }}</p>
+                </div>
+                <button
+                  (click)="irActividad(act.id)"
+                  class="text-primary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition"
+                  title="Ver detalle de la actividad"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                       viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </li>
+            </ul>
+          </ng-container>
+          <ng-template #noActs>
+            <p class="text-text-secondary text-sm">No hay actividades registradas para este cultivo.</p>
+          </ng-template>
+        </div>
+      </div>
+    </ng-template>
+  </main>
+
+  <!-- MODAL: Mapa “contenedor” (80 % ancho × 70 % alto) -->
+  <ng-container *ngIf="mapaExpandido">
+    <div class="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <!-- Contenedor del modal -->
+      <div
+        class="relative bg-white rounded-2xl overflow-hidden shadow-xl"
+        style="width: 80vw; height: 70vh;"
+      >
+        <!-- Botón Cerrar en esquina -->
+        <button
+          (click)="cerrarMapa()"
+          class="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full p-2 shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <!-- Aquí el div que alberga el mapa a media pantalla -->
+        <div id="mapFull" class="w-full h-full"></div>
+      </div>
+    </div>
+  </ng-container>
+</div>

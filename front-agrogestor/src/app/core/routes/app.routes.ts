@@ -1,4 +1,5 @@
 // src/app/core/routes/app.routes.ts
+
 import { Routes } from '@angular/router';
 
 import { LandingComponent }            from '../../features/landing/landing.component';
@@ -10,6 +11,7 @@ import { AdminParcelasComponent }      from '../../features/adminParcelas/admin-
 import { AdminUsuariosComponent }      from '../../features/adminUsuarios/admin-usuarios.component';
 import { AdminCultivosComponent }      from '../../features/adminCultivos/admin-cultivos.component';
 import { AdminCultivoCreateComponent } from '../../features/adminCultivos/admin-cultivos-create.component';
+import { AdminCultivosDetalleComponent } from '../../features/cultivos/admin-cultivos-detalle.component'; 
 import { AdminActividadesComponent }   from '../../features/adminActividades/admin-actividades.component';
 import { TecnicoDashboardComponent }   from '../../features/tecnicoDashboard/tecnico-dashboard.component';
 import { TecnicoParcelasComponent }    from '../../features/tecnicoParcelas/tecnico-parcelas.component';
@@ -28,7 +30,7 @@ export const routes: Routes = [
   { path: 'landing', redirectTo: '', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent }, 
+  { path: 'forgot-password', component: ForgotPasswordComponent },
 
   // Admin Dashboard
   {
@@ -66,7 +68,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard]
   },
 
-// Listado global de cultivos
+  // Listado global de cultivos
   {
     path: 'dashboard/admin/cultivos',
     component: AdminCultivosComponent,
@@ -83,6 +85,12 @@ export const routes: Routes = [
     component: AdminCultivoCreateComponent,
     canActivate: [AuthGuard, AdminGuard]
   },
+  // Detalle de un cultivo
+  {
+    path: 'dashboard/admin/cultivos/:id',
+    component: AdminCultivosDetalleComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
 
   // Admin – Usuarios y Actividades
   {
@@ -97,9 +105,15 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard/admin/actividades/create',
-    component: AdminActividadesCreateComponent, 
+    component: AdminActividadesCreateComponent,
     canActivate: [AuthGuard, AdminGuard]
   },
+  {
+    path: 'dashboard/admin/actividades/:id',
+    component: ActividadDetailComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+
   // Técnico – Cultivos
   {
     path: 'dashboard/tecnico/cultivos',
@@ -111,11 +125,6 @@ export const routes: Routes = [
     component: TecnicoCultivoCreateComponent,
     canActivate: [AuthGuard]
   },
-{
-  path: 'dashboard/admin/actividades/:id',
-  component: ActividadDetailComponent,
-  canActivate: [AuthGuard, AdminGuard]
-},
 
   // Wildcard
   { path: '**', redirectTo: '', pathMatch: 'full' },
