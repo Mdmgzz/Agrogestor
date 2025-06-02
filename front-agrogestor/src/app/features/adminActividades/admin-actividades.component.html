@@ -1,3 +1,5 @@
+<!-- src/app/features/adminActividades/admin-actividades.component.html -->
+
 <div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
   <!-- Navbar -->
   <nav
@@ -92,7 +94,7 @@
                 Parcela: {{ a.cultivo?.parcela?.nombre }} — {{ a.cultivo?.parcela?.propietario }}
               </p>
               <p class="text-sm text-text-secondary mt-1">
-                Detalles: {{ a.detalles | json }}
+                Detalles: {{ getTexto(a.detalles) }}
               </p>
             </div>
             <!-- Flecha decorativa -->

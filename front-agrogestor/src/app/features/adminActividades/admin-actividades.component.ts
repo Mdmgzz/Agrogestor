@@ -1,3 +1,5 @@
+// src/app/features/adminActividades/admin-actividades.component.ts
+
 import { Component, OnInit }                    from '@angular/core';
 import { CommonModule }                         from '@angular/common';
 import { FormsModule }                          from '@angular/forms';
@@ -48,5 +50,23 @@ export class AdminActividadesComponent implements OnInit {
         return true;
       })
       .sort((a, b) => a.fecha_actividad.localeCompare(b.fecha_actividad));
+  }
+
+  /**
+   * Devuelve el campo `texto` dentro de `detalles`.
+   * `detalles` puede llegar como JSON-string o como objeto ya parseado.
+   */
+  getTexto(detalles: any): string {
+    if (!detalles) {
+      return '';
+    }
+    try {
+      const obj = typeof detalles === 'string'
+        ? JSON.parse(detalles)
+        : detalles;
+      return obj?.texto ?? '';
+    } catch {
+      return '';
+    }
   }
 }

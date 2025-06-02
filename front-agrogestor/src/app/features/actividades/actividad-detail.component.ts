@@ -11,6 +11,7 @@ import { ActividadService, Actividad }                  from '../../core/service
 import { UserService, Usuario }                         from '../../core/services/user.service';
 import { ParcelaService, Parcela }                      from '../../core/services/parcela.service';
 import { CultivoService, Cultivo }                      from '../../core/services/cultivo.service';
+import { environment }                                  from '../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -38,7 +39,9 @@ export class ActividadDetailComponent implements OnInit {
   cultivoId?:  number;
   tipo_actividad = '';
   fecha_actividad?: string;
-  detalles = '';
+
+  // Ahora solo texto plano para “Detalles”
+  detallesTexto = '';
 
   private actividadId!: number;
 
@@ -80,17 +83,26 @@ export class ActividadDetailComponent implements OnInit {
           return;
         }
 
-        // Imprimimos TODO el JSON para verificar que realmente nos llegan TODOS los campos:
-        console.log('RAW actividad (sin castear a interfaz):', (actividad as any));
-
+        // Asignamos actividad
         this.actividad = actividad;
+
         // Rellenamos los campos de modelo:
         this.usuarioId       = actividad.usuario_id;
         this.parcelaId       = actividad.cultivo?.parcela?.id ?? undefined;
         this.cultivoId       = actividad.cultivo_id;
         this.tipo_actividad  = actividad.tipo_actividad;
         this.fecha_actividad = actividad.fecha_actividad;
-        this.detalles        = JSON.stringify(actividad.detalles ?? {}, null, 2);
+
+        // Extraer el campo “texto” de actividad.detalles (que viene como JSON)
+        try {
+          const detallesObj = typeof actividad.detalles === 'string'
+            ? JSON.parse(actividad.detalles)
+            : actividad.detalles;
+          this.detallesTexto = detallesObj?.texto ?? '';
+        } catch {
+          // Si no es un JSON válido, dejamos el texto vacío
+          this.detallesTexto = '';
+        }
 
         // Filtramos las listas para los <select>
         this.parcelasFiltradas = this.parcelas.filter(p => p.usuario_id === this.usuarioId);
@@ -136,12 +148,13 @@ export class ActividadDetailComponent implements OnInit {
     this.loading = true;
     this.error   = null;
 
+    // Empaquetamos “detalles” como JSON con clave “texto”
     const payload = {
       usuario_id:      this.usuarioId,
       cultivo_id:      this.cultivoId,
       tipo_actividad:  this.tipo_actividad,
       fecha_actividad: this.fecha_actividad,
-      detalles:        this.detalles  // JSON como string
+      detalles:        JSON.stringify({ texto: this.detallesTexto })
     };
 
     this.actSvc.update(this.actividadId, payload).subscribe({
@@ -173,5 +186,10 @@ export class ActividadDetailComponent implements OnInit {
 
   volver(): void {
     this.router.navigate(['/dashboard/admin/actividades']);
+  }
+
+  /** Devuelve la URL pública de un adjunto */
+  getAdjuntoUrl(ruta: string): string {
+    return `${environment.apiUrl}/storage/${ruta}`;
   }
 }
