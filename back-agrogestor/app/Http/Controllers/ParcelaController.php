@@ -69,7 +69,7 @@ class ParcelaController extends Controller
         }
 
         // Carga relaciones necesarias
-        return $parcela->load('usuario', 'cultivos', 'actividades');
+        return $parcela->load('usuario', 'cultivos');
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -15,30 +14,20 @@ class Parcela extends Model
         'superficie_ha',
     ];
 
-    /**
-     * La parcela pertenece a un usuario (quien la registró).
-     */
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
 
-    /**
-     * La parcela puede tener muchos cultivos.
-     */
     public function cultivos()
     {
         return $this->hasMany(Cultivo::class, 'parcela_id');
     }
 
-    /**
-     * La parcela puede tener muchas actividades (si decides guardar `parcela_id` en actividades).
-     * En este diseño, las actividades están ligadas al cultivo, pero si más adelante
-     * quieres filtrar actividades por parcela directa:
-     *
-     * public function actividades()
-     * {
-     *     return $this->hasMany(Actividad::class, 'parcela_id');
-     * }
-     */
+    // Agregar este método para que ->load('actividades') funcione
+    public function actividades()
+    {
+        // Ajusta el namespace y la clave foránea si tu modelo Actividad está en otra ruta/clase
+        return $this->hasMany(\App\Models\Actividad::class, 'parcela_id');
+    }
 }

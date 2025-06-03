@@ -1,0 +1,175 @@
+<div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
+  <!-- NAVBAR -->
+  <nav
+    class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50
+           flex items-center justify-between px-6 py-4 sm:px-8 shadow-md"
+  >
+    <div class="flex items-center space-x-4">
+      <a
+        (click)="volver()"
+        class="flex items-center space-x-2 text-white hover:text-white/80 transition 
+               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 19l-7-7 7-7" />
+        </svg>
+        <span class="font-semibold uppercase tracking-wide">Volver</span>
+      </a>
+      <img src="/assets/Agrogestor_sinTexto.png" alt="Logo Agrogestor" class="h-10 w-auto object-contain" />
+      <h1 class="text-2xl font-extrabold text-white uppercase tracking-wide">Detalle de Parcela</h1>
+    </div>
+  </nav>
+
+  <!-- MAIN: espacio superior (pt-12) y contenedor centrado -->
+  <main class="flex-1 max-w-6xl mx-auto pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+    <!-- Spinner mientras carga -->
+    <ng-container *ngIf="loading; else contenidoBlock">
+      <div class="text-center py-12">
+        <div class="inline-block animate-pulse text-text-secondary">Cargando parcela...</div>
+      </div>
+    </ng-container>
+
+    <!-- BLOQUE DE CONTENIDO -->
+    <ng-template #contenidoBlock>
+      <!-- Mensaje de error general -->
+      <div *ngIf="error" class="text-center text-red-600 mb-6">{{ error }}</div>
+
+      <!-- CONTENEDOR CENTRALIZADO CON ANCHO MÁXIMO Y JUSTIFY-CENTER -->
+      <div class="mx-auto w-full max-w-4xl flex flex-col lg:flex-row gap-6 justify-center">
+        <!-- TARJETA IZQUIERDA (≈60% ancho) con formulario -->
+        <div class="w-full lg:w-7/12 bg-white rounded-2xl p-4 lg:p-6 shadow-lg space-y-4">
+          <form (ngSubmit)="guardarCambios(form)" #form="ngForm" novalidate>
+            <!-- Campo USUARIO (igual que en actividad) -->
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-text-primary mb-2">Usuario</label>
+              <select
+                name="usuarioId"
+                [(ngModel)]="usuarioId"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              >
+                <option [ngValue]="null" disabled>-- Selecciona Usuario --</option>
+                <option *ngFor="let u of usuarios" [ngValue]="u.id">
+                  {{ u.nombre }} {{ u.apellidos }}
+                </option>
+              </select>
+              <div *ngIf="form.submitted && !usuarioId" class="text-red-600 text-sm mt-1">
+                Debes elegir un usuario.
+              </div>
+            </div>
+
+            <!-- Campo NOMBRE -->
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-text-primary mb-2">Nombre</label>
+              <input
+                type="text"
+                name="nombre"
+                [(ngModel)]="nombre"
+                required
+                placeholder="Introduce el nombre de la parcela"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              />
+              <div *ngIf="form.submitted && !nombre.trim()" class="text-red-600 text-sm mt-1">
+                El nombre es obligatorio.
+              </div>
+            </div>
+
+            <!-- Campo PROPIETARIO -->
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-text-primary mb-2">Propietario</label>
+              <input
+                type="text"
+                name="propietario"
+                [(ngModel)]="propietario"
+                required
+                placeholder="Introduce el nombre del propietario"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              />
+              <div *ngIf="form.submitted && !propietario.trim()" class="text-red-600 text-sm mt-1">
+                El propietario es obligatorio.
+              </div>
+            </div>
+
+            <!-- Campo SUPERFICIE (ha) -->
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-text-primary mb-2">Superficie (ha)</label>
+              <input
+                type="number"
+                name="superficie_ha"
+                [(ngModel)]="superficie_ha"
+                required
+                min="0"
+                step="any"
+                placeholder="0.00"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+              />
+              <div *ngIf="form.submitted && (!superficie_ha.trim() || isInvalidSuperficie())"
+                   class="text-red-600 text-sm mt-1">
+                Indica una superficie válida (número ≥ 0).
+              </div>
+            </div>
+
+            <!-- Botones Guardar y Eliminar -->
+            <div class="flex justify-end space-x-2 mt-2">
+              <button
+                type="button"
+                (click)="eliminarParcela()"
+                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Eliminar
+              </button>
+              <button
+                type="submit"
+                [disabled]="loading"
+                class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg shadow-md hover:bg-primary-dark transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                {{ loading ? 'Guardando…' : 'Guardar' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TARJETA DERECHA: Cultivos asociados (≈40% ancho) -->
+        <div class="w-full lg:w-5/12 bg-white/20 backdrop-blur-lg rounded-2xl p-4 lg:p-6 shadow-md">
+          <h2 class="text-2xl font-bold text-text-primary mb-4">Cultivos asociados</h2>
+          <ng-container *ngIf="cultivos.length > 0; else noCultivos">
+            <ul class="space-y-3">
+              <li
+                *ngFor="let c of cultivos"
+                class="flex items-center justify-between bg-white/50 rounded-lg p-3 hover:bg-white/60 transition focus-within:ring-2 focus-within:ring-primary"
+              >
+                <div>
+                  <p class="font-medium text-text-primary text-sm">{{ c.nombre }}</p>
+                  <p class="text-xs text-text-secondary">Siembra: {{ c.fecha_inicio | date:'shortDate' }}</p>
+                </div>
+                <button
+                  (click)="irCultivo(c.id)"
+                  class="text-primary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition"
+                  title="Ver detalle del cultivo"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                       viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </li>
+            </ul>
+          </ng-container>
+
+          <ng-template #noCultivos>
+            <div class="py-8 text-center text-text-secondary text-sm">
+              No hay cultivos registrados para esta parcela.
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </ng-template>
+  </main>
+</div>

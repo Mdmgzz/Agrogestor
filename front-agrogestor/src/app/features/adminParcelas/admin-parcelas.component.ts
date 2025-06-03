@@ -1,4 +1,3 @@
-// src/app/features/parcelas/admin-parcelas.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParcelaService, Parcela } from '../../core/services/parcela.service';
@@ -80,9 +79,10 @@ export class AdminParcelasComponent implements OnInit {
     }
   }
 
-  verDetalle(id: number) {
-    this.router.navigate([`/dashboard/parcelas/${id}`]);
-  }
+  // Ya no es necesario porque el <li> usa routerLink directamente:
+  // verDetalle(id: number) {
+  //   this.router.navigate([`/dashboard/admin/parcelas/${id}`]);
+  // }
 
   logout() {
     localStorage.clear();

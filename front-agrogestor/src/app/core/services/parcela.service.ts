@@ -26,6 +26,17 @@ export interface Parcela {
     correo: string;
     rol: string;
   };
+  cultivos?: {          
+    id: number;
+    parcela_id: number;
+    nombre: string;
+    fecha_inicio: string;
+    superficie_ha: number;
+    latitud?: number;
+    longitud?: number;
+    created_at?: string;
+    updated_at?: string;
+  }[];
 }
 
 @Injectable({
