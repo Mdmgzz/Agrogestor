@@ -13,13 +13,14 @@ export interface ParcelaMin {
 
 export interface Cultivo {
   id: number;
+  usuario_id: number;      // <— agregamos esto
   parcela_id: number;
   variedad: string;
   fecha_siembra: string;
   superficie_ha: number;
   latitud?: number;
   longitud?: number;
-  // Añadimos la relación para que TypeScript lo reconozca:
+  // Relación opcional para acceder a datos de la parcela si el backend la incluye:
   parcela?: ParcelaMin;
 }
 
