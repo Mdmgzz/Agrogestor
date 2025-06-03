@@ -1,26 +1,33 @@
 // src/app/core/services/cultivo.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+// Redefinimos ParcelaMin para incluir usuario_id y también 'usuario' anidado.
+// De esta forma podremos leer tanto parcela.usuario_id como parcela.usuario.id
 export interface ParcelaMin {
   id: number;
   nombre: string;
   propietario: string;
+  usuario_id: number;
+  usuario?: {
+    id: number;
+    nombre: string;
+    apellidos: string;
+  };
 }
 
 export interface Cultivo {
   id: number;
-  usuario_id: number;      // <— agregamos esto
   parcela_id: number;
   variedad: string;
   fecha_siembra: string;
   superficie_ha: number;
   latitud?: number;
   longitud?: number;
-  // Relación opcional para acceder a datos de la parcela si el backend la incluye:
+
+  // La relación parcela vendrá con al menos { id, nombre, propietario, usuario_id, usuario: {…} }
   parcela?: ParcelaMin;
 }
 

@@ -6,11 +6,14 @@ import { FormsModule }                          from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CultivoService, Cultivo }              from '../../core/services/cultivo.service';
 
+// Ajustamos Parcela dentro de CultivoConParcela para incluir usuario_id,
+// de acuerdo a la definición de ParcelaMin en el servicio.
 interface CultivoConParcela extends Cultivo {
   parcela: {
     id: number;
     nombre: string;
     propietario: string;
+    usuario_id: number;
   };
 }
 
@@ -43,13 +46,16 @@ export class AdminCultivosComponent implements OnInit {
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) this.parcelaId = +idParam;
+    if (idParam) {
+      this.parcelaId = +idParam;
+    }
 
     this.svc.getAll().subscribe({
       next: data => {
         // Solo incluir cultivos de la parcela si existe parámetro id
-        this.cultivosAll = (data as CultivoConParcela[])
-          .filter(c => this.parcelaId == null || c.parcela_id === this.parcelaId);
+        this.cultivosAll = (data as CultivoConParcela[]).filter(
+          c => this.parcelaId == null || c.parcela_id === this.parcelaId
+        );
 
         this.processGrouping();
         this.loading = false;

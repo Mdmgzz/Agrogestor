@@ -1,17 +1,15 @@
-// src/app/features/adminCultivos/admin-cultivos-detalle.component.ts
-
 import {
   Component,
   OnInit,
   ChangeDetectorRef,
   HostListener
 } from '@angular/core';
-import { CommonModule }      from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { CommonModule }            from '@angular/common';
+import { FormsModule, NgForm }    from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, of }      from 'rxjs';
-import { catchError }        from 'rxjs/operators';
-import * as L                from 'leaflet';
+import { forkJoin, of }           from 'rxjs';
+import { catchError }             from 'rxjs/operators';
+import * as L                     from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { CultivoService, Cultivo }     from '../../core/services/cultivo.service';
@@ -32,28 +30,24 @@ export class AdminCultivosDetalleComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  // Lista completa de usuarios y parcelas
-  usuarios: Usuario[]    = [];
-  parcelas: Parcela[]    = [];
+  usuarios: Usuario[]          = [];
+  parcelas: Parcela[]          = [];
   parcelasFiltradas: Parcela[] = [];
 
-  // Campos bindados al formulario
-  usuarioId?:    number;
-  parcelaId?:    number;
+  usuarioId?: number;
+  parcelaId?: number;
   variedad = '';
   fecha_siembra?: string;
   superficie_ha?: string;
 
-  // Ubicación en el mapa
   lat?: number;
   lng?: number;
 
-  private map!: L.Map;        // Referencia al mapa pequeño
-  private marker!: L.Marker;  // Referencia al marcador del mapa pequeño
-
   actividades: Actividad[] = [];
-
   mapaExpandido = false;
+
+  private map!: L.Map;
+  private marker!: L.Marker;
   private cultivoIdParam!: number;
 
   constructor(
@@ -65,7 +59,7 @@ export class AdminCultivosDetalleComponent implements OnInit {
     private userSvc:      UserService,
     private cdr:          ChangeDetectorRef
   ) {
-    // Configurar iconos Leaflet para el mapa pequeño
+    // Configurar iconos de Leaflet (para el “mapa pequeño”)
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'assets/marker-icon-2x.png',
@@ -82,7 +76,10 @@ export class AdminCultivosDetalleComponent implements OnInit {
     }
     this.cultivoIdParam = +idParam;
 
-    // Primero cargamos usuarios, parcelas y el propio cultivo en paralelo
+    // 1) Cargamos en paralelo:
+    //    - lista de usuarios
+    //    - lista de parcelas
+    //    - datos concretos de este cultivo
     forkJoin({
       usuarios: this.userSvc.getAll().pipe(catchError(() => of([] as Usuario[]))),
       parcelas: this.parcelaSvc.getAll().pipe(catchError(() => of([] as Parcela[]))),
@@ -99,26 +96,29 @@ export class AdminCultivosDetalleComponent implements OnInit {
           this.loading = false;
           return;
         }
-
         this.cultivo = cultivo;
-        // Rellenar campos bindables
-        this.usuarioId    = cultivo.usuario_id;         // Ahora sí existe en la interfaz
-        this.parcelaId    = cultivo.parcela_id;
-        this.variedad     = cultivo.variedad;
-        this.fecha_siembra = cultivo.fecha_siembra;
-        this.superficie_ha = cultivo.superficie_ha?.toString() ?? '';
-        this.lat          = cultivo.latitud ?? 0;
-        this.lng          = cultivo.longitud ?? 0;
 
-        // Al cargar la parcela inicial, debemos filtrar según ese usuario
+        // 2) Rellenamos los campos “bindables”:
+        //    - Obtenemos el usuario del cultivo a partir de cultivo.parcela.usuario_id
+        this.usuarioId      = cultivo.parcela!.usuario_id;
+        this.parcelaId      = cultivo.parcela_id;
+        this.variedad       = cultivo.variedad;
+        this.fecha_siembra  = cultivo.fecha_siembra;
+        this.superficie_ha  = cultivo.superficie_ha?.toString() ?? '';
+        this.lat            = cultivo.latitud ?? 0;
+        this.lng            = cultivo.longitud ?? 0;
+
+        // 3) Filtramos las parcelas que correspondan a ese usuario:
         this.parcelasFiltradas = this.parcelas.filter(
           p => p.usuario_id === this.usuarioId
         );
 
+        // 4) Carga de actividades asociadas a este cultivo
         this.loadActividades();
+
         this.loading = false;
 
-        // Inicializar el mapa pequeño (una vez que lat/lng estén definidos).
+        // 5) Inicializar mapa pequeño (tras un pequeño timeout)
         setTimeout(() => this.initMap(), 50);
       },
       error: () => {
@@ -128,7 +128,7 @@ export class AdminCultivosDetalleComponent implements OnInit {
     });
   }
 
-  /** Cuando el usuario cambia en el dropdown, filtramos parcelas y reseteamos parcela y cultivo */
+  /** Cuando el usuario cambia en el dropdown, filtramos nuevamente las parcelas */
   onUserChange(): void {
     this.parcelaId = undefined;
     this.parcelasFiltradas = this.parcelas.filter(
@@ -136,7 +136,7 @@ export class AdminCultivosDetalleComponent implements OnInit {
     );
   }
 
-  /** Carga las actividades asociadas al cultivo actual */
+  /** Carga las actividades asociadas a este cultivo (filtrando por cultivo_id) */
   private loadActividades(): void {
     this.actividadSvc.getAll().subscribe({
       next: data => {
@@ -168,8 +168,8 @@ export class AdminCultivosDetalleComponent implements OnInit {
 
     const superficieNum = Number(this.superficie_ha);
 
+    // El backend de actualización solo espera los campos relevantes:
     const payload: Partial<Cultivo> = {
-      usuario_id:    this.usuarioId,
       parcela_id:    this.parcelaId,
       variedad:      this.variedad,
       fecha_siembra: this.fecha_siembra,
@@ -180,7 +180,7 @@ export class AdminCultivosDetalleComponent implements OnInit {
 
     this.cultivoSvc.update(this.cultivoIdParam, payload).subscribe({
       next: () => {
-        // Al guardar, recargamos la página para reflejar cambios
+        // Recargamos todo para que se vean los nuevos datos
         this.ngOnInit();
       },
       error: err => {
@@ -195,12 +195,8 @@ export class AdminCultivosDetalleComponent implements OnInit {
       return;
     }
     this.cultivoSvc.delete(this.cultivoIdParam).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/admin/cultivos']);
-      },
-      error: err => {
-        alert(err.error?.message || 'Error al eliminar el cultivo.');
-      }
+      next: () => this.router.navigate(['/dashboard/admin/cultivos']),
+      error: err => alert(err.error?.message || 'Error al eliminar el cultivo.')
     });
   }
 
@@ -214,18 +210,11 @@ export class AdminCultivosDetalleComponent implements OnInit {
 
   /** Inicializa Leaflet en `<div id="map">` (mapa pequeño) */
   private initMap(): void {
-    if (this.lat == null || this.lng == null) {
-      return;
-    }
+    if (this.lat == null || this.lng == null) return;
     const mapContainer = document.getElementById('map');
-    if (!mapContainer) {
-      return;
-    }
-    // Si ya existía un mapa, lo removemos
-    if (this.map) {
-      this.map.remove();
-    }
-    // Crear el mapa pequeño
+    if (!mapContainer) return;
+    if (this.map) this.map.remove();
+
     this.map = L.map('map', {
       center: [this.lat, this.lng],
       zoom: 15,
@@ -238,7 +227,6 @@ export class AdminCultivosDetalleComponent implements OnInit {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.map);
 
-    // Crear el marcador draggable en el mapa pequeño
     this.marker = L.marker([this.lat, this.lng], { draggable: true }).addTo(this.map);
     this.marker.on('dragend', () => {
       const pos = this.marker.getLatLng();
@@ -257,13 +245,11 @@ export class AdminCultivosDetalleComponent implements OnInit {
 
   abrirMapaFullscreen(): void {
     this.mapaExpandido = true;
-    // Forzar a Angular a actualizar la vista antes de cualquier operación extra
     this.cdr.detectChanges();
   }
 
   cerrarMapa(): void {
     this.mapaExpandido = false;
-    // Al cerrar el modal, centramos y reposicionamos el mapa pequeño
     if (this.map && this.marker && this.lat != null && this.lng != null) {
       this.map.setView([this.lat, this.lng], this.map.getZoom());
       this.marker.setLatLng([this.lat, this.lng]);
@@ -271,9 +257,7 @@ export class AdminCultivosDetalleComponent implements OnInit {
     }
   }
 
-  /** Este método faltaba en tu componente original */
   guardarUbicacion(): void {
-    // Simplemente cierra el modal y reaplica la vista del mapa pequeño
     this.cerrarMapa();
   }
 
@@ -282,7 +266,6 @@ export class AdminCultivosDetalleComponent implements OnInit {
     this.lng = event.lng;
   }
 
-  // Permitir cerrar con la tecla Esc
   @HostListener('document:keydown.escape', ['$event'])
   onEscapePress(event: KeyboardEvent) {
     if (this.mapaExpandido) {

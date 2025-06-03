@@ -1,4 +1,5 @@
 // src/app/features/tecnicoCultivo/tecnico-cultivo.component.ts
+
 import { Component, OnInit }                    from '@angular/core';
 import { CommonModule }                         from '@angular/common';
 import { FormsModule }                          from '@angular/forms';
@@ -10,6 +11,7 @@ interface CultivoConParcela extends Cultivo {
     id: number;
     nombre: string;
     propietario: string;
+    usuario_id: number; // <— agregado para coincidir con ParcelaMin
   };
 }
 
