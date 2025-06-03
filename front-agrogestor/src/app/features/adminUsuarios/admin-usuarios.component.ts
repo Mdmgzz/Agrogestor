@@ -64,7 +64,7 @@ export class AdminUsuariosComponent implements OnInit {
   }
 
   editarUsuario(id: number) {
-    this.router.navigate([`/dashboard/usuarios/${id}/edit`]);
+    this.router.navigate([`/dashboard/admin/usuarios/${id}/edit`]);
   }
 
   eliminarUsuario(id: number) {

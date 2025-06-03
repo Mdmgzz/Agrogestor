@@ -60,6 +60,6 @@ export class TecnicoParcelasComponent implements OnInit {
   }
 
   verDetalle(id: number): void {
-    this.router.navigate(['/dashboard/parcelas', id]);
+    this.router.navigate([`/dashboard/tecnico/parcelas/${id}`]);
   }
 }

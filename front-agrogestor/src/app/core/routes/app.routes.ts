@@ -1,5 +1,4 @@
 // src/app/core/routes/app.routes.ts
-
 import { Routes } from '@angular/router';
 
 import { LandingComponent }            from '../../features/landing/landing.component';
@@ -9,11 +8,12 @@ import { ForgotPasswordComponent }     from '../../features/auth/ForgotPassword/
 import { AdminDashboardComponent }     from '../../features/adminDashboard/admin-dashboard.component';
 import { AdminParcelasComponent }      from '../../features/adminParcelas/admin-parcelas.component';
 import { AdminParcelaCreateComponent } from '../../features/adminParcelas/admin-parcela-create.component';
-import { AdminParcelaDetalleComponent } from '../../features/parcelas/admin-parcela-detalle.component'; 
+import { AdminParcelaDetalleComponent } from '../../features/parcelas/admin-parcela-detalle.component';
 import { AdminUsuariosComponent }      from '../../features/adminUsuarios/admin-usuarios.component';
+import { AdminUsuarioEditComponent }  from '../../features/usuario/admin-usuario-edit.component';
 import { AdminCultivosComponent }      from '../../features/adminCultivos/admin-cultivos.component';
 import { AdminCultivoCreateComponent } from '../../features/adminCultivos/admin-cultivos-create.component';
-import { AdminCultivosDetalleComponent } from '../../features/cultivos/admin-cultivos-detalle.component'; 
+import { AdminCultivosDetalleComponent } from '../../features/cultivos/admin-cultivos-detalle.component';
 import { AdminActividadesComponent }   from '../../features/adminActividades/admin-actividades.component';
 import { AdminActividadesCreateComponent } from '../../features/adminActividades/admin-actividades-create.component';
 import { ActividadDetailComponent }    from '../../features/actividades/actividad-detail.component';
@@ -22,7 +22,8 @@ import { TecnicoDashboardComponent }   from '../../features/tecnicoDashboard/tec
 import { TecnicoParcelasComponent }    from '../../features/tecnicoParcelas/tecnico-parcelas.component';
 import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
 import { TecnicoCultivosComponent }    from '../../features/tecnicoCultivo/tecnico-cultivo.component';
-import { TecnicoCultivoCreateComponent }   from '../../features/tecnicoCultivo/tecnico-cultivo-create.component';
+import { TecnicoCultivoCreateComponent } from '../../features/tecnicoCultivo/tecnico-cultivo-create.component';
+import { TecnicoParcelaDetalleComponent } from '../../features/parcelas/tecnico-parcela-detalle.component';
 
 import { AuthGuard }  from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
@@ -58,6 +59,11 @@ export const routes: Routes = [
     component: TecnicoParcelaCreateComponent,
     canActivate: [AuthGuard]
   },
+  {
+    path: 'dashboard/tecnico/parcelas/:id',
+    component: TecnicoParcelaDetalleComponent,
+    canActivate: [AuthGuard]
+  },
 
   // Admin – Parcelas
   {
@@ -72,7 +78,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard/admin/parcelas/:id',
-    component: AdminParcelaDetalleComponent, // <-- aquí debe ir el componente de detalle
+    component: AdminParcelaDetalleComponent,
     canActivate: [AuthGuard, AdminGuard]
   },
 
@@ -102,6 +108,11 @@ export const routes: Routes = [
   {
     path: 'dashboard/admin/usuarios',
     component: AdminUsuariosComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'dashboard/admin/usuarios/:id/edit',
+    component: AdminUsuarioEditComponent,
     canActivate: [AuthGuard, AdminGuard]
   },
   {
