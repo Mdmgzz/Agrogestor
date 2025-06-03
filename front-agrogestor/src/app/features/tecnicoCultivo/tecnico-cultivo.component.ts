@@ -80,7 +80,8 @@ export class TecnicoCultivosComponent implements OnInit {
   }
 
   editarCultivo(id: number) {
-    this.router.navigate(['/dashboard/tecnico/cultivos', id, 'edit']);
+    // Redirige al detalle que permite editar
+    this.router.navigate([`/dashboard/tecnico/cultivos/${id}`]);
   }
 
   eliminarCultivo(id: number) {
