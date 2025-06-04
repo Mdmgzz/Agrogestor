@@ -1,7 +1,5 @@
 <?php
 
-// App/Models/Adjunto.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -21,4 +19,3 @@ class Adjunto extends Model
         return $this->belongsTo(Actividad::class);
     }
 }
-
