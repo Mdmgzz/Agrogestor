@@ -25,49 +25,45 @@ export class ActividadService {
 
   constructor(private http: HttpClient) {}
 
-  /** Obtiene todas las actividades */
+  /** Obtener todas las actividades */
   getAll(): Observable<Actividad[]> {
     return this.http.get<Actividad[]>(this.baseUrl);
   }
 
-  /** Obtiene una actividad por ID */
+  /** Obtener actividad por ID */
   getById(id: number): Observable<Actividad> {
     return this.http.get<Actividad>(`${this.baseUrl}/${id}`);
   }
 
-  /** Crear sin adjuntos (JSON puro) */
+  /** Crear actividad SIN adjuntos (JSON puro) */
   create(payload: Partial<Actividad>): Observable<Actividad> {
     return this.http.post<Actividad>(this.baseUrl, payload);
   }
 
   /**
-   * Crear CON adjuntos (multipart/form-data).
-   * En Laravel, si usas `FormData` sin `_method`, bastará con un POST normal.
+   * Crear actividad CON adjuntos (multipart/form-data).
+   * Debe incluir en FormData los campos:
+   *    usuario_id, cultivo_id, tipo_actividad, fecha_actividad, detalles (JSON string)
+   *    y archivos en 'adjuntos[]'
    */
   createConAdjuntos(formData: FormData): Observable<Actividad> {
-    // Angular detecta automáticamente multipart/form-data; no hace falta headers manuales
     return this.http.post<Actividad>(this.baseUrl, formData);
   }
 
-  /** Actualizar sin adjuntos (JSON puro) */
+  /** Actualizar SIN adjuntos (JSON puro) */
   update(id: number, payload: Partial<Actividad>): Observable<Actividad> {
     return this.http.put<Actividad>(`${this.baseUrl}/${id}`, payload);
   }
 
   /**
    * Actualizar CON adjuntos (multipart/form-data).
-   * Si tu endpoint en Laravel espera `_method=PUT`, puedes usar:
-   *    POST /api/actividades/{id}?_method=PUT
-   * o directamente un PUT con FormData, según cómo lo tengas configurado.
+   * Laravel acepta POST con _method=PUT. Aquí usamos POST a la URL con '?_method=PUT'.
    */
   updateConAdjuntos(id: number, formData: FormData): Observable<Actividad> {
-    // Ejemplo usando _method=PUT en la URL:
     return this.http.post<Actividad>(
       `${this.baseUrl}/${id}?_method=PUT`,
       formData
     );
-    // Si tu Laravel acepta un PUT directo con FormData, podrías hacer:
-    // return this.http.put<Actividad>(`${this.baseUrl}/${id}`, formData);
   }
 
   /** Eliminar una actividad */

@@ -1,19 +1,11 @@
-<!-- src/app/features/adminActividades/admin-actividades-create.component.html -->
 <div
   class="
-    min-h-screen
-    flex items-center justify-center
-
-    /* 1) Degradado de fondo */
+    min-h-screen flex items-center justify-center
     bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60
-
-    /* 2) SVG de olas encima (definido en tailwind.css como .bg-pattern-agro) */
-    bg-pattern-agro
-
-    p-6
+    bg-pattern-agro p-6
   "
 >
-  <div class="w-full max-w-lg bg-white rounded-2xl p-8 shadow-lg">
+  <div class="w-full max-w-3xl bg-white rounded-2xl p-8 shadow-lg">
     <h2 class="text-2xl font-extrabold text-text-primary mb-6">Crear Nueva Actividad</h2>
 
     <form (ngSubmit)="crearActividad(form)" #form="ngForm" novalidate>
@@ -25,7 +17,8 @@
           [(ngModel)]="usuarioId"
           (ngModelChange)="onUserChange()"
           required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
         >
           <option [ngValue]="null" disabled>-- Selecciona Usuario --</option>
           <option *ngFor="let u of usuarios" [ngValue]="u.id">
@@ -33,20 +26,22 @@
           </option>
         </select>
         <div *ngIf="form.submitted && !usuarioId" class="text-red-600 text-sm mt-1">
-          Debes seleccionar un usuario.
+          Debes elegir un usuario.
         </div>
       </div>
 
       <!-- Parcela -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-text-primary mb-2">Parcela</label>
+        <label class="block text-sm font-medium text-text primaria mb-2">Parcela</label>
         <select
           name="parcelaId"
           [(ngModel)]="parcelaId"
           (ngModelChange)="onParcelaChange()"
           [disabled]="!usuarioId"
           required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition disabled:bg-gray-100"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                 disabled:bg-gray-100"
         >
           <option [ngValue]="null" disabled>-- Selecciona Parcela --</option>
           <option *ngFor="let p of parcelasFiltradas" [ngValue]="p.id">
@@ -54,7 +49,7 @@
           </option>
         </select>
         <div *ngIf="form.submitted && !parcelaId" class="text-red-600 text-sm mt-1">
-          Debes seleccionar una parcela.
+          Debes elegir una parcela.
         </div>
       </div>
 
@@ -66,7 +61,9 @@
           [(ngModel)]="cultivoId"
           [disabled]="!parcelaId"
           required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition disabled:bg-gray-100"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                 disabled:bg-gray-100"
         >
           <option [ngValue]="null" disabled>-- Selecciona Cultivo --</option>
           <option *ngFor="let c of cultivosFiltrados" [ngValue]="c.id">
@@ -74,7 +71,7 @@
           </option>
         </select>
         <div *ngIf="form.submitted && !cultivoId" class="text-red-600 text-sm mt-1">
-          Debes seleccionar un cultivo.
+          Debes elegir un cultivo.
         </div>
       </div>
 
@@ -85,7 +82,8 @@
           name="tipo_actividad"
           [(ngModel)]="tipo_actividad"
           required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
         >
           <option [ngValue]="null" disabled>-- Selecciona Tipo --</option>
           <option value="tratamiento">Tratamiento</option>
@@ -95,7 +93,7 @@
           <option value="cultural">Cultural</option>
         </select>
         <div *ngIf="form.submitted && !tipo_actividad" class="text-red-600 text-sm mt-1">
-          Debes seleccionar un tipo de actividad.
+          Debes elegir un tipo.
         </div>
       </div>
 
@@ -107,38 +105,64 @@
           name="fecha_actividad"
           [(ngModel)]="fecha_actividad"
           required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
         />
         <div *ngIf="form.submitted && !fecha_actividad" class="text-red-600 text-sm mt-1">
-          La fecha es obligatoria.
+          Indica la fecha.
         </div>
       </div>
 
       <!-- Detalles -->
-      <div class="mb-6">
+      <div class="mb-4">
         <label class="block text-sm font-medium text-text-primary mb-2">Detalles</label>
         <textarea
-          name="detalles"
-          [(ngModel)]="detalles"
+          name="detallesTexto"
+          [(ngModel)]="detallesTexto"
           rows="3"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+          placeholder="Describe aquí los detalles de la actividad..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
         ></textarea>
       </div>
 
-      <!-- Adjuntos (opcional) -->
+      <!-- Subida de Archivos PDF (múltiple + lista) -->
       <div class="mb-6">
-        <label class="block text-sm font-medium text-text-primary mb-2">Adjuntos (opcional)</label>
+        <label class="block text-sm font-medium text-text-primary mb-2">Adjuntar PDF(s)</label>
+
+        <!-- Input que permite seleccionar varios archivos -->
         <input
           type="file"
           (change)="onFilesSelected($event)"
+          accept="application/pdf"
           multiple
-          class="w-full text-sm text-gray-500
+          class="block w-full text-sm text-gray-600
                  file:mr-4 file:py-2 file:px-4
                  file:rounded-lg file:border-0
                  file:text-sm file:font-semibold
-                 file:bg-gray-200 file:text-gray-700
-                 hover:file:bg-gray-300 transition"
+                 file:bg-primary file:text-white
+                 hover:file:bg-primary/80
+                 transition"
         />
+        <div *ngIf="pdfError" class="text-red-600 text-sm mt-1">{{ pdfError }}</div>
+
+        <!-- ► Nueva sección: Lista de archivos seleccionados -->
+        <div *ngIf="selectedFiles.length > 0" class="mt-3 space-y-2">
+          <p class="text-sm font-medium text-text-primary">Archivos seleccionados:</p>
+          <ul class="list-disc list-inside">
+            <li *ngFor="let f of selectedFiles; let i = index" class="flex items-center justify-between">
+              <span class="text-sm">{{ f.name }}</span>
+              <button
+                type="button"
+                (click)="quitarArchivo(i)"
+                class="text-red-600 hover:text-red-800 text-xs ml-2"
+                title="Quitar este archivo"
+              >
+                Eliminar
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <!-- Botones -->
@@ -152,10 +176,10 @@
         </button>
         <button
           type="submit"
-          [disabled]="loading || form.invalid"
-          class="px-5 py-2 bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="saving || form.invalid"
+          class="px-5 py-2 bg-gradient-to-r from-primary to-primary/80 text-white rounded-lg shadow hover:shadow-xl transform hover:-translate-y-0.5 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ loading ? 'Creando...' : 'Crear Actividad' }}
+          {{ saving ? 'Creando…' : 'Crear Actividad' }}
         </button>
       </div>
 

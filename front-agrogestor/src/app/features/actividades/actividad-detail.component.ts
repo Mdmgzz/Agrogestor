@@ -1,21 +1,20 @@
-// src/app/features/actividades/actividad-detail.component.ts
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { CommonModule }                            from '@angular/common';
+import { FormsModule, NgForm }                     from '@angular/forms';
+import { RouterModule, ActivatedRoute, Router }    from '@angular/router';
+import { forkJoin, of }                            from 'rxjs';
+import { catchError, finalize }                    from 'rxjs/operators';
 
-import { Component, OnInit }                            from '@angular/core';
-import { CommonModule }                                 from '@angular/common';
-import { FormsModule, NgForm }                          from '@angular/forms';
-import { RouterModule, ActivatedRoute, Router }         from '@angular/router';
-import { forkJoin, of }                                 from 'rxjs';
-import { catchError }                                   from 'rxjs/operators';
-
-import { ActividadService, Actividad }                  from '../../core/services/actividad.service';
-import { UserService, Usuario }                         from '../../core/services/user.service';
-import { ParcelaService, Parcela }                      from '../../core/services/parcela.service';
-import { CultivoService, Cultivo }                      from '../../core/services/cultivo.service';
-import { environment }                                  from '../../../environments/environment';
+import { ActividadService, Actividad }             from '../../core/services/actividad.service';
+import { AdjuntoService }                          from '../../core/services/adjunto.service';
+import { UserService, Usuario }                    from '../../core/services/user.service';
+import { ParcelaService, Parcela }                 from '../../core/services/parcela.service';
+import { CultivoService, Cultivo }                 from '../../core/services/cultivo.service';
+import { environment }                             from '../../../environments/environment';
 
 @Component({
   standalone: true,
-  selector: 'app-actividad-detail',
+  selector: 'app-admin-actividades-detail',
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './actividad-detail.component.html',
 })
@@ -40,8 +39,20 @@ export class ActividadDetailComponent implements OnInit {
   tipo_actividad = '';
   fecha_actividad?: string;
 
-  // Ahora solo texto plano para “Detalles”
+  // Detalles (texto plano)
   detallesTexto = '';
+
+  // ► Estado para deshabilitar botón "Guardar Actividad"
+  savingActividad = false;
+
+  // ► Para manejar el PDF seleccionado
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  selectedPdf?: File;
+  pdfError: string | null = null;
+  uploadingPdf = false;
+
+  // ► Lista de adjuntos ya guardados en el servidor
+  adjuntos: { id: number; ruta_archivo: string }[] = [];
 
   private actividadId!: number;
 
@@ -49,13 +60,17 @@ export class ActividadDetailComponent implements OnInit {
     private route:  ActivatedRoute,
     private router: Router,
     private actSvc: ActividadService,
+    private adjSvc: AdjuntoService,
     private usuarioSvc: UserService,
     private parcelaSvc: ParcelaService,
     private cultivoSvc: CultivoService
   ) {}
 
   ngOnInit(): void {
-    // 1) Extraer el :id de la ruta
+    this.loading = true;
+    this.error = null;
+
+    // 1) Extraer ID de la ruta
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
       this.router.navigate(['/dashboard/admin/actividades']);
@@ -63,76 +78,100 @@ export class ActividadDetailComponent implements OnInit {
     }
     this.actividadId = +idParam;
 
-    // 2) Disparamos en paralelo usuarios, parcelas, cultivos y la propia actividad
+    // 2) Cargar en paralelo: usuarios, parcelas, cultivos, actividad y lista de adjuntos
     forkJoin({
       usuarios: this.usuarioSvc.getAll().pipe(catchError(() => of([] as Usuario[]))),
       parcelas: this.parcelaSvc.getAll().pipe(catchError(() => of([] as Parcela[]))),
       cultivos: this.cultivoSvc.getAll().pipe(catchError(() => of([] as Cultivo[]))),
       actividad: this.actSvc.getById(this.actividadId).pipe(
         catchError(err => of(null as Actividad | null))
+      ),
+      adjuntos: this.adjSvc.list(this.actividadId).pipe(
+        catchError(() => of([]))
       )
-    }).subscribe({
-      next: ({ usuarios, parcelas, cultivos, actividad }) => {
+    }).pipe(
+      finalize(() => this.loading = false)
+    ).subscribe({
+      next: ({ usuarios, parcelas, cultivos, actividad, adjuntos }) => {
         this.usuarios    = usuarios;
         this.parcelas    = parcelas;
         this.cultivosAll = cultivos;
+        this.adjuntos    = adjuntos;
 
         if (!actividad) {
           this.error = 'Actividad no encontrada o sin permisos.';
-          this.loading = false;
           return;
         }
 
-        // Asignamos actividad
+        // Llenar datos de la actividad
         this.actividad = actividad;
-
-        // Rellenamos los campos de modelo:
         this.usuarioId       = actividad.usuario_id;
         this.parcelaId       = actividad.cultivo?.parcela?.id ?? undefined;
         this.cultivoId       = actividad.cultivo_id;
         this.tipo_actividad  = actividad.tipo_actividad;
         this.fecha_actividad = actividad.fecha_actividad;
 
-        // Extraer el campo “texto” de actividad.detalles (que viene como JSON)
+        // Extraer “texto” desde actividad.detalles
         try {
-          const detallesObj = typeof actividad.detalles === 'string'
+          const obj = typeof actividad.detalles === 'string'
             ? JSON.parse(actividad.detalles)
             : actividad.detalles;
-          this.detallesTexto = detallesObj?.texto ?? '';
+          this.detallesTexto = obj?.texto ?? '';
         } catch {
-          // Si no es un JSON válido, dejamos el texto vacío
           this.detallesTexto = '';
         }
 
-        // Filtramos las listas para los <select>
-        this.parcelasFiltradas = this.parcelas.filter(p => p.usuario_id === this.usuarioId);
-        this.cultivosFiltrados  = this.cultivosAll.filter(c => c.parcela_id === this.parcelaId);
-
-        this.loading = false;
+        this.parcelasFiltradas = this.parcelas.filter(
+          p => p.usuario_id === this.usuarioId
+        );
+        this.cultivosFiltrados  = this.cultivosAll.filter(
+          c => c.parcela_id === this.parcelaId
+        );
       },
       error: () => {
         this.error = 'Error al cargar datos del servidor.';
-        this.loading = false;
       }
     });
   }
 
-  // Cuando el usuario cambia en el dropdown, filtramos parcelas y reseteamos cultivo
+  // Cuando el usuario cambia, filtramos parcelas
   onUserChange(): void {
     this.parcelaId = undefined;
     this.cultivoId = undefined;
-    this.parcelasFiltradas = this.parcelas.filter(p => p.usuario_id === this.usuarioId);
+    this.parcelasFiltradas = this.parcelas.filter(
+      p => p.usuario_id === this.usuarioId
+    );
     this.cultivosFiltrados  = [];
   }
 
-  // Cuando la parcela cambia, filtramos cultivos y reseteamos cultivoId
+  // Cuando la parcela cambia, filtramos cultivos
   onParcelaChange(): void {
     this.cultivoId = undefined;
-    this.cultivosFiltrados = this.cultivosAll.filter(c => c.parcela_id === this.parcelaId);
+    this.cultivosFiltrados = this.cultivosAll.filter(
+      c => c.parcela_id === this.parcelaId
+    );
   }
 
-  // Guardar cambios (envía PUT /api/actividades/{id})
-  guardarCambios(form: NgForm): void {
+  // ► Se dispara al elegir un solo PDF (para subir)
+  onPdfSelected(event: Event): void {
+    this.pdfError = null;
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      this.selectedPdf = undefined;
+      return;
+    }
+    const file = input.files[0];
+    // Validar que sea PDF
+    if (file.type !== 'application/pdf') {
+      this.pdfError = 'Solo se permiten archivos PDF.';
+      this.selectedPdf = undefined;
+      return;
+    }
+    this.selectedPdf = file;
+  }
+
+  // ► Guardar solo campos de la actividad (sin adjuntos nuevos)
+  guardarActividad(form: NgForm): void {
     if (
       form.invalid ||
       !this.usuarioId ||
@@ -145,11 +184,10 @@ export class ActividadDetailComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
-    this.error   = null;
+    this.savingActividad = true;
+    this.error = null;
 
-    // Empaquetamos “detalles” como JSON con clave “texto”
-    const payload = {
+    const payload: Partial<Actividad> = {
       usuario_id:      this.usuarioId,
       cultivo_id:      this.cultivoId,
       tipo_actividad:  this.tipo_actividad,
@@ -157,19 +195,77 @@ export class ActividadDetailComponent implements OnInit {
       detalles:        JSON.stringify({ texto: this.detallesTexto })
     };
 
-    this.actSvc.update(this.actividadId, payload).subscribe({
-      next: () => {
-        // Después de actualizar, recargamos todo para reflejar los cambios
-        this.ngOnInit();
+    this.actSvc.update(this.actividadId, payload).pipe(
+      finalize(() => this.savingActividad = false)
+    ).subscribe({
+      next: updated => {
+        this.actividad = updated;
+        // Tras actualizar, recargamos lista de adjuntos
+        this.refrescarAdjuntos();
       },
       error: err => {
-        this.loading = false;
         this.error = err.error?.message || 'Error al guardar la actividad.';
       }
     });
   }
 
-  // Eliminar actividad con confirmación
+  // ► Subir el PDF seleccionado (solo uno) usando AdjuntoService
+  subirPdf(): void {
+    if (!this.selectedPdf) {
+      this.pdfError = 'Selecciona primero un PDF.';
+      return;
+    }
+
+    this.uploadingPdf = true;
+    this.pdfError = null;
+
+    // Convertimos selectedPdf en FileList para usar AdjuntoService.upload()
+    const dt = new DataTransfer();
+    dt.items.add(this.selectedPdf);
+    const fileList = dt.files;
+
+    this.adjSvc.upload(this.actividadId, fileList).pipe(
+      finalize(() => this.uploadingPdf = false)
+    ).subscribe({
+      next: nuevosAdjuntos => {
+        // Limpiar el input y recargar la lista
+        this.selectedPdf = undefined;
+        this.fileInput.nativeElement.value = '';
+        this.refrescarAdjuntos();
+      },
+      error: err => {
+        this.pdfError = err.error?.message || 'Error subiendo el PDF.';
+      }
+    });
+  }
+
+  // ► Recargar la lista de adjuntos
+  private refrescarAdjuntos(): void {
+    this.adjSvc.list(this.actividadId).subscribe({
+      next: lista => {
+        this.adjuntos = lista;
+      },
+      error: () => {
+        // Si falla, no bloqueamos UI 
+      }
+    });
+  }
+
+  // ► Borrar un adjunto específico
+  borrarAdjunto(id: number): void {
+    if (!confirm('¿Seguro que quieres eliminar este adjunto?')) {
+      return;
+    }
+    this.adjSvc.delete(id).subscribe({
+      next: () => {
+        this.refrescarAdjuntos();
+      },
+      error: () => {
+        alert('Error al eliminar el adjunto.');
+      }
+    });
+  }
+
   eliminarActividad(): void {
     if (!confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
       return;
@@ -188,8 +284,9 @@ export class ActividadDetailComponent implements OnInit {
     this.router.navigate(['/dashboard/admin/actividades']);
   }
 
-  /** Devuelve la URL pública de un adjunto */
+  /** Genera la URL pública para descargar/abrir el adjunto */
   getAdjuntoUrl(ruta: string): string {
+    // Se abre directamente en el navegador
     return `${environment.apiUrl}/storage/${ruta}`;
   }
 }

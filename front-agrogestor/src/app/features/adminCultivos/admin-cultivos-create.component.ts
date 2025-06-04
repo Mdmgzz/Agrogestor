@@ -1,12 +1,15 @@
 // src/app/features/adminCultivos/admin-cultivos-create.component.ts
-import { Component, OnInit, AfterViewInit }     from '@angular/core';
-import { CommonModule }                         from '@angular/common';
-import { FormsModule, NgForm }                  from '@angular/forms';
-import { Router, RouterModule }                 from '@angular/router';
-import * as L                                   from 'leaflet';
-import { CultivoService }                       from '../../core/services/cultivo.service';
-import { ParcelaService, Parcela }              from '../../core/services/parcela.service';
-import { Usuario }                              from '../../core/services/auth.service';
+
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { CommonModule }                       from '@angular/common';
+import { FormsModule, NgForm }                from '@angular/forms';
+import { Router, RouterModule }               from '@angular/router';
+import * as L                                 from 'leaflet';
+import { CultivoService }                     from '../../core/services/cultivo.service';
+import { ParcelaService, Parcela }            from '../../core/services/parcela.service';
+
+// 1) Importa UserService y el tipo Usuario
+import { UserService, Usuario }               from '../../core/services/user.service';
 
 @Component({
   standalone: true,
@@ -15,23 +18,30 @@ import { Usuario }                              from '../../core/services/auth.s
   templateUrl: './admin-cultivos-create.component.html',
 })
 export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
-  // dropdown de parcelas
+  // --- Dropdown de usuarios (nuevo) ---
+  allUsuarios: Usuario[] = [];
+  filteredUsuarios: Usuario[] = [];
+  userSearch = '';
+  showUserDropdown = false;
+  selectedUsuario?: Usuario;
+
+  // --- Dropdown de parcelas (existente) ---
   parcelas: Parcela[] = [];
   filteredParcelas: Parcela[] = [];
   parcelaSearch = '';
   showParcelaDropdown = false;
   selectedParcelaId?: number;
 
-  // campos del cultivo
+  // Campos del cultivo
   variedad = '';
   fechaSiembra?: string;
   superficie?: number;
 
-  // coordenadas
+  // Coordenadas
   lat?: number;
   lng?: number;
 
-  // ui state
+  // UI state
   loading = false;
   error: string | null = null;
   mapExpanded = false;
@@ -39,12 +49,14 @@ export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
   private map!: L.Map;
   private markerLayer = L.layerGroup();
 
+  // 2) Inyecta UserService junto con los demás servicios
   constructor(
     private cultivoSvc : CultivoService,
     private parcelaSvc : ParcelaService,
+    private userSvc    : UserService,
     private router     : Router
   ) {
-    // corregir rutas de iconos Leaflet
+    // corregir rutas de iconos Leaflet (ya existente)
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'assets/marker-icon-2x.png',
@@ -54,9 +66,9 @@ export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // 3) Carga lista de parcelas (igual que antes)
     this.parcelaSvc.getAll().subscribe({
       next: list => {
-        // esperamos que cada Parcela tenga p.usuario
         this.parcelas = list;
         this.filteredParcelas = list;
       },
@@ -64,9 +76,21 @@ export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
         this.error = 'No se pudieron cargar las parcelas';
       }
     });
+
+    // 4) Carga lista de usuarios para el dropdown de usuarios
+    this.userSvc.getAll().subscribe({
+      next: list => {
+        this.allUsuarios = list;
+        this.filteredUsuarios = list;
+      },
+      error: () => {
+        this.error = 'Error al cargar lista de usuarios.';
+      }
+    });
   }
 
   ngAfterViewInit(): void {
+    // Código de Leaflet (igual que antes)
     const container = document.getElementById('map');
     if (!container) return;
 
@@ -94,34 +118,71 @@ export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /** Filtra el dropdown por usuario, parcela o propietario */
+  /** Filtra el dropdown de parcelas (igual que antes) */
   filterParcelas(): void {
     const term = this.parcelaSearch.toLowerCase().trim();
     this.filteredParcelas = this.parcelas.filter(p =>
-      p.usuario.nombre.toLowerCase().includes(term)
+      p.usuario?.nombre.toLowerCase().includes(term)
       || p.nombre.toLowerCase().includes(term)
       || p.propietario.toLowerCase().includes(term)
     );
   }
 
-  /** Selecciona una parcela y muestra técnico — parcela — propietario */
+  /** Selecciona una parcela (igual que antes) */
   selectParcela(p: Parcela): void {
     this.selectedParcelaId = p.id;
-    this.parcelaSearch = `${p.usuario.nombre} — ${p.nombre} — ${p.propietario}`;
+    this.parcelaSearch = `${p.usuario?.nombre} — ${p.nombre} — ${p.propietario}`;
     this.showParcelaDropdown = false;
   }
 
-  /** Alterna tamaño del mapa y fuerza redraw */
+  /** Alterna tamaño del mapa y fuerza redraw (igual que antes) */
   toggleMapSize(): void {
     this.mapExpanded = !this.mapExpanded;
     setTimeout(() => this.map.invalidateSize(), 300);
   }
 
+  // --- Métodos para el dropdown de usuarios (nuevo) ---
+
+  /** Alterna la visibilidad del dropdown de usuarios */
+  toggleUserDropdown(): void {
+    this.showUserDropdown = !this.showUserDropdown;
+    if (this.showUserDropdown) {
+      // Si acabamos de abrirlo, reseteamos el filtro y el texto
+      this.filteredUsuarios = this.allUsuarios;
+      this.userSearch = '';
+    }
+  }
+
+  /** Cada vez que cambia el texto de búsqueda, filtra la lista */
+  onUserSearchChange(): void {
+    const term = this.userSearch.trim().toLowerCase();
+    this.filteredUsuarios = this.allUsuarios.filter(u =>
+      (`${u.nombre} ${u.apellidos}`).toLowerCase().includes(term)
+    );
+    this.showUserDropdown = true;
+  }
+
+  /** Al hacer clic en un usuario, se guarda la selección */
+  selectUsuario(u: Usuario): void {
+    this.selectedUsuario = u;
+    this.userSearch = `${u.nombre} ${u.apellidos}`;
+    this.showUserDropdown = false;
+  }
+
+  /** Envía el formulario para crear el cultivo */
   crearCultivo(form: NgForm): void {
+    // 5) Valida que haya un usuario seleccionado
+    if (!this.selectedUsuario) {
+      this.error = 'Debes seleccionar un usuario.';
+      return;
+    }
+
+    // Valida que haya una parcela seleccionada (igual que antes)
     if (!this.selectedParcelaId) {
       this.error = 'Debes seleccionar una parcela.';
       return;
     }
+
     if (form.invalid) {
       this.error = 'Completa todos los campos obligatorios.';
       return;
@@ -134,7 +195,9 @@ export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.error = null;
 
-    const payload = {
+    // 6) Prepara el payload incluyendo el usuario_id
+    const payload: any = {
+      usuario_id:    this.selectedUsuario.id, // <-- AÑADE usuario_id en el payload
       parcela_id:    this.selectedParcelaId,
       variedad:      this.variedad,
       fecha_siembra: this.fechaSiembra,

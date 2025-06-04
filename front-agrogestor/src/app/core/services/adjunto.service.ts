@@ -1,6 +1,7 @@
 // src/app/core/services/adjunto.service.ts
+
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -14,35 +15,44 @@ export interface Adjunto {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdjuntoService {
+  // BaseUrl apunta a “http://localhost:8000/api/actividades”
   private readonly baseUrl = `${environment.apiUrl}/api/actividades`;
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Sube uno o varios archivos para la actividad indicada.
-   * @param actividadId ID de la actividad
-   * @param files FileList de los archivos seleccionados
+   * GET /api/actividades/{actividadId}/adjuntos
+   * Devuelve la lista de adjuntos para la actividad.
+   */
+  list(actividadId: number): Observable<Adjunto[]> {
+    return this.http.get<Adjunto[]>(
+      `${this.baseUrl}/${actividadId}/adjuntos`
+    );
+  }
+
+  /**
+   * POST /api/actividades/{actividadId}/adjuntos
+   * Sube uno o varios archivos PDF (siempre con key "adjuntos[]").
    */
   upload(actividadId: number, files: FileList): Observable<Adjunto[]> {
     const formData = new FormData();
-    Array.from(files).forEach(file => formData.append('archivos[]', file));
-    return this.http.post<Adjunto[]>(`${this.baseUrl}/${actividadId}/adjuntos`, formData);
+    Array.from(files).forEach((file) =>
+      formData.append('archivos[]', file) 
+      // OJO: en Laravel se valida "archivos.*", aquí lo llamamos "archivos[]" para
+      // que coincida con validar 'archivos.*' en Controller.
+    );
+    return this.http.post<Adjunto[]>(
+      `${this.baseUrl}/${actividadId}/adjuntos`,
+      formData
+    );
   }
 
   /**
-   * Lista los adjuntos asociados a una actividad.
-   * @param actividadId ID de la actividad
-   */
-  list(actividadId: number): Observable<Adjunto[]> {
-    return this.http.get<Adjunto[]>(`${this.baseUrl}/${actividadId}/adjuntos`);
-  }
-
-  /**
-   * Elimina un adjunto por su ID.
-   * @param id ID del adjunto
+   * DELETE /api/adjuntos/{id}
+   * Elimina el adjunto; en Laravel opcionalmente borrará el archivo físico.
    */
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/adjuntos/${id}`);
