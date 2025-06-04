@@ -1,15 +1,45 @@
-<!-- src/app/features/adminCultivos/admin-cultivos-detalle.component.html -->
-<div class="relative min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
-  <!-- NAVBAR -->
+<!--
+  Ahora el SVG de fondo (bg-pattern-agro) se aplica SIEMPRE,
+  en cualquier ancho de ventana. Si solo lo quieres a partir de cierto breakpoint,
+  reemplaza “bg-pattern-agro” por “lg:bg-pattern-agro” (o “md:bg-pattern-agro”, etc.).
+-->
+<div
+  class="
+    relative
+    min-h-screen
+    flex flex-col
+
+    /* Degradado de fondo + SVG de olas encima */
+    bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60
+    bg-pattern-agro
+
+    /* Si prefieres que el SVG no se mezcle con el degradado, guarda únicamente bg-pattern-agro:
+       > bg-pattern-agro
+       > (y quita el bg-gradient-to-b …)
+    */
+  "
+>
+  <!-- ───────────────────────────── NAVBAR ───────────────────────────── -->
   <nav
-    class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50
-           flex items-center justify-between px-6 py-4 sm:px-8 shadow-md"
+    class="
+      sticky top-0 z-10
+      backdrop-blur-lg
+      bg-secondary/80
+      border-b border-secondary/50
+      flex items-center justify-between
+      px-6 py-4 sm:px-8
+      shadow-md
+    "
   >
     <div class="flex items-center space-x-4">
       <a
         (click)="volver()"
-        class="flex items-center space-x-2 text-white hover:text-white/80 transition
-               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white cursor-pointer"
+        class="
+          flex items-center space-x-2
+          text-white hover:text-white/80 transition
+          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white
+          cursor-pointer
+        "
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
              viewBox="0 0 24 24" stroke="currentColor">
@@ -23,6 +53,7 @@
     </div>
   </nav>
 
+  <!-- ───────────────────────────── CONTENIDO PRINCIPAL ───────────────────────────── -->
   <main class="flex-1 max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Spinner mientras carga -->
     <ng-container *ngIf="loading; else contenidoBlock">
@@ -31,12 +62,13 @@
       </div>
     </ng-container>
 
+    <!-- Bloque de contenido cargado -->
     <ng-template #contenidoBlock>
       <!-- Mensaje de error general -->
       <div *ngIf="error" class="text-center text-red-600 mb-6">{{ error }}</div>
 
       <div class="flex flex-col lg:flex-row gap-6">
-        <!-- TARJETA IZQUIERDA (3/5 ancho) -->
+        <!-- ───────────────── TARJETA IZQUIERDA (FORMULARIO) ───────────────── -->
         <div class="w-full lg:w-3/5 bg-white rounded-2xl p-4 lg:p-6 shadow-lg space-y-4">
           <form (ngSubmit)="guardarCambios(form)" #form="ngForm" novalidate>
             <!-- Campo USUARIO -->
@@ -47,8 +79,11 @@
                 [(ngModel)]="usuarioId"
                 (ngModelChange)="onUserChange()"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+                class="
+                  w-full px-3 py-2
+                  border border-gray-300 rounded-lg
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                "
               >
                 <option [ngValue]="null" disabled class="text-gray-500">-- Selecciona Usuario --</option>
                 <option *ngFor="let u of usuarios" [ngValue]="u.id">
@@ -67,8 +102,11 @@
                 name="parcelaId"
                 [(ngModel)]="parcelaId"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+                class="
+                  w-full px-3 py-2
+                  border border-gray-300 rounded-lg
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                "
               >
                 <option [ngValue]="null" disabled class="text-gray-500">-- Selecciona Parcela --</option>
                 <option *ngFor="let p of parcelasFiltradas" [ngValue]="p.id">
@@ -88,8 +126,11 @@
                 name="variedad"
                 [(ngModel)]="variedad"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+                class="
+                  w-full px-3 py-2
+                  border border-gray-300 rounded-lg
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                "
               />
               <div *ngIf="form.submitted && !variedad" class="text-red-600 text-sm mt-1">
                 La variedad es obligatoria.
@@ -104,8 +145,11 @@
                 name="fecha_siembra"
                 [(ngModel)]="fecha_siembra"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+                class="
+                  w-full px-3 py-2
+                  border border-gray-300 rounded-lg
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                "
               />
               <div *ngIf="form.submitted && !fecha_siembra" class="text-red-600 text-sm mt-1">
                 La fecha es obligatoria.
@@ -120,8 +164,11 @@
                 name="superficie_ha"
                 [(ngModel)]="superficie_ha"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg
-                       focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+                class="
+                  w-full px-3 py-2
+                  border border-gray-300 rounded-lg
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition
+                "
               />
               <div *ngIf="form.submitted && !superficie_ha" class="text-red-600 text-sm mt-1">
                 Indica la superficie en hectáreas.
@@ -139,7 +186,10 @@
               <button
                 type="button"
                 (click)="abrirMapaFullscreen()"
-                class="text-sm font-semibold text-primary hover:text-primary-dark transition focus:outline-none focus:underline"
+                class="
+                  text-sm font-semibold text-primary hover:text-primary-dark transition
+                  focus:outline-none focus:underline
+                "
               >
                 Expandir
               </button>
@@ -150,21 +200,30 @@
               <button
                 type="button"
                 (click)="eliminarCultivo()"
-                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                class="
+                  px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow
+                  hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
+                "
               >
                 Eliminar
               </button>
               <button
                 type="submit"
                 [disabled]="loading"
-                class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg shadow hover:bg-primary-dark transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                class="
+                  px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg shadow
+                  hover:bg-primary-dark transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary
+                "
               >
                 {{ loading ? 'Guardando…' : 'Guardar' }}
               </button>
               <button
                 type="button"
                 (click)="volver()"
-                class="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium bg-white rounded-lg hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                class="
+                  px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium bg-white rounded-lg
+                  hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400
+                "
               >
                 Volver
               </button>
@@ -174,22 +233,34 @@
           </form>
         </div>
 
-        <!-- TARJETA DERECHA: Actividades asociadas -->
+        <!-- ───────────────── TARJETA DERECHA: ACTIVIDADES ASOCIADAS ───────────────── -->
         <div class="w-full lg:w-2/5 bg-white/20 backdrop-blur-lg rounded-2xl p-4 lg:p-6">
           <h2 class="text-2xl font-bold text-text-primary mb-4">Actividades asociadas</h2>
           <ng-container *ngIf="actividades.length > 0; else noActs">
             <ul class="space-y-3">
               <li
                 *ngFor="let act of actividades"
-                class="flex items-center justify-between bg-white/50 rounded-lg p-3 hover:bg-white/60 transition focus-within:ring-2 focus-within:ring-primary"
+                class="
+                  flex items-center justify-between
+                  bg-white/50 rounded-lg p-3
+                  hover:bg-white/60 transition
+                  focus-within:ring-2 focus-within:ring-primary
+                "
               >
                 <div>
-                  <p class="font-medium text-text-primary text-sm">{{ act.tipo_actividad | titlecase }}</p>
-                  <p class="text-xs text-text-secondary">Fecha: {{ act.fecha_actividad | date:'shortDate' }}</p>
+                  <p class="font-medium text-text-primary text-sm">
+                    {{ act.tipo_actividad | titlecase }}
+                  </p>
+                  <p class="text-xs text-text-secondary">
+                    Fecha: {{ act.fecha_actividad | date:'shortDate' }}
+                  </p>
                 </div>
                 <button
                   (click)="irActividad(act.id)"
-                  class="text-primary hover:text-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition"
+                  class="
+                    text-primary hover:text-primary-dark
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition
+                  "
                   title="Ver detalle de la actividad"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -202,17 +273,22 @@
             </ul>
           </ng-container>
           <ng-template #noActs>
-            <p class="text-text-secondary text-sm">No hay actividades registradas para este cultivo.</p>
+            <p class="text-text-secondary text-sm">
+              No hay actividades registradas para este cultivo.
+            </p>
           </ng-template>
         </div>
       </div>
     </ng-template>
   </main>
 
-  <!-- MODAL: Mapa full-screen -->
+  <!-- ───────────────── MODAL MAPA FULL-SCREEN ───────────────── -->
   <ng-container *ngIf="mapaExpandido">
     <div
-      class="fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      class="
+        fixed inset-0 z-20 flex items-center justify-center
+        bg-black/50 backdrop-blur-sm
+      "
       (click)="cerrarMapa()"
     >
       <div
@@ -223,13 +299,19 @@
         <div class="absolute top-3 right-3 flex space-x-2 z-50">
           <button
             (click)="guardarUbicacion()"
-            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
+            class="
+              bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full shadow
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400
+            "
           >
             Guardar
           </button>
           <button
             (click)="cerrarMapa()"
-            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+            class="
+              bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full shadow
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400
+            "
           >
             Cerrar
           </button>
@@ -239,7 +321,8 @@
             [lat]="lat!"
             [lng]="lng!"
             (coordsChanged)="onCoordsChanged($event)"
-          ></app-full-screen-map>
+          >
+          </app-full-screen-map>
         </div>
       </div>
     </div>

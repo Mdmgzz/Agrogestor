@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Fondo aclarado -->
+  <rect width="800" height="600" fill="#DCFCE7"></rect>
+
+  <!-- Onda 1 (color primario) -->
+  <path
+    d="M0,480 C100,460 200,500 300,480
+       S 500,500 600,480
+       S 700,500 800,480
+       V600 H0 Z"
+    fill="#2F855A"
+    fill-opacity="0.8"
+  ></path>
+
+  <!-- Onda 2 -->
+  <path
+    d="M0,520 C100,500 200,540 300,520
+       S 500,540 600,520
+       S 700,540 800,520
+       V560 H0 Z"
+    fill="#2F855A"
+    fill-opacity="0.6"
+  ></path>
+
+  <!-- Onda 3 -->
+  <path
+    d="M0,560 C100,540 200,580 300,560
+       S 500,580 600,560
+       S 700,580 800,560
+       V520 H0 Z"
+    fill="#2F855A"
+    fill-opacity="0.4"
+  ></path>
+
+  <!-- Onda 4 -->
+</svg>

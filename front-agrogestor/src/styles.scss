@@ -1,3 +1,18 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+@layer utilities {
+  .bg-pattern-agro {
+    /* La ruta de tu SVG de olas */
+    background-image: url('/assets/pattern-agro.svg');
+    background-repeat: no-repeat;
+
+    /* Para que el SVG se escale siempre cubriendo TODO el contenedor: */
+    background-size: cover;
+
+    /* Anclamos las olas en la parte de abajo del contenedor;
+       si prefieres centrar vertical/horizontal, usa “background-position: center;” */
+    background-position: bottom center;
+  }
+}

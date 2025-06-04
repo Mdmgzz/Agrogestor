@@ -1,5 +1,16 @@
 <!-- src/app/features/tecnicoParcelas/tecnico-parcelas.component.html -->
-<div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
+<div
+  class="
+    min-h-screen
+    flex flex-col
+
+    /* 1) Degradado de fondo */
+    bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60
+
+    /* 2) SVG de olas encima */
+    bg-pattern-agro
+  "
+>
   <nav class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50 flex items-center justify-between px-8 py-4 shadow-md">
     <div class="flex items-center space-x-4">
       <a routerLink="/dashboard/tecnico"

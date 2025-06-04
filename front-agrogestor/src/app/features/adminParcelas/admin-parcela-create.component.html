@@ -1,5 +1,18 @@
-<!-- src/app/features/adminParcelas/admin-parcela-create.component.html -->
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60 p-6">
+<!-- src/app/features/adminActividades/admin-parcela-create.component.html -->
+<div
+  class="
+    min-h-screen
+    flex items-center justify-center
+
+    /* 1) Degradado de fondo */
+    bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60
+
+    /* 2) SVG de olas encima */
+    bg-pattern-agro
+
+    p-6
+  "
+>
   <div class="w-full max-w-lg bg-white rounded-2xl p-8 shadow-lg">
     <h2 class="text-2xl font-extrabold text-text-primary mb-6">Crear Parcela (Admin)</h2>
     <form (ngSubmit)="crearParcela(form)" #form="ngForm" novalidate>
@@ -17,6 +30,7 @@
             required
             autocomplete="off"
             class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary transition"
+            placeholder="Busca usuario por nombre o apellidos..."
           />
           <button
             type="button"

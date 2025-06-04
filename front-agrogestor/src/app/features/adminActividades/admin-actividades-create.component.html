@@ -1,5 +1,18 @@
 <!-- src/app/features/adminActividades/admin-actividades-create.component.html -->
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60 p-6">
+<div
+  class="
+    min-h-screen
+    flex items-center justify-center
+
+    /* 1) Degradado de fondo */
+    bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60
+
+    /* 2) SVG de olas encima (definido en tailwind.css como .bg-pattern-agro) */
+    bg-pattern-agro
+
+    p-6
+  "
+>
   <div class="w-full max-w-lg bg-white rounded-2xl p-8 shadow-lg">
     <h2 class="text-2xl font-extrabold text-text-primary mb-6">Crear Nueva Actividad</h2>
 

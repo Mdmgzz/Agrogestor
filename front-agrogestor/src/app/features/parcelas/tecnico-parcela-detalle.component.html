@@ -1,5 +1,16 @@
 <!-- src/app/features/tecnicoParcelas/tecnico-parcela-detalle.component.html -->
-<div class="min-h-screen flex flex-col bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60">
+<div
+  class="
+    min-h-screen
+    flex flex-col
+
+    /* 1) Degradado de fondo */
+    bg-gradient-to-b from-secondary/20 via-secondary/40 to-secondary/60
+
+    /* 2) SVG de olas encima */
+    bg-pattern-agro
+  "
+>
   <!-- NAVBAR -->
   <nav
     class="sticky top-0 z-10 backdrop-blur-lg bg-secondary/80 border-b border-secondary/50
@@ -77,9 +88,7 @@
 
             <!-- Superficie (ha) -->
             <div class="mb-3">
-              <label class="block text-sm font-medium text-text-primary mb-2"
-                >Superficie (ha)</label
-              >
+              <label class="block text-sm font-medium text-text-primary mb-2">Superficie (ha)</label>
               <input
                 type="number"
                 name="superficie_ha"
@@ -133,9 +142,7 @@
               >
                 <div>
                   <p class="font-medium text-text-primary text-sm">{{ c.nombre }}</p>
-                  <p class="text-xs text-text-secondary">
-                    Siembra: {{ c.fecha_inicio | date:'shortDate' }}
-                  </p>
+                  <p class="text-xs text-text-secondary">Siembra: {{ c.fecha_inicio | date:'shortDate' }}</p>
                 </div>
                 <button
                   (click)="irCultivo(c.id)"
