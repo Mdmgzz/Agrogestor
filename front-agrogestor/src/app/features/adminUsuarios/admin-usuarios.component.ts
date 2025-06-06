@@ -60,7 +60,7 @@ export class AdminUsuariosComponent implements OnInit {
   }
 
   crearUsuario() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['dashboard/admin/usuarios/create']);
   }
 
   editarUsuario(id: number) {

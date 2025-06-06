@@ -61,7 +61,7 @@ export class RegisterComponent implements OnInit {
 
     const payload = this.form.getRawValue();
     this.auth.register(payload).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/login']),
       error: err => {
         this.error = err.error?.message || 'Error en el registro';
         this.loading = false;

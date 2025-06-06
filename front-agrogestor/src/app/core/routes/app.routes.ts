@@ -20,6 +20,8 @@ import { AdminActividadesComponent }    from '../../features/adminActividades/ad
 import { AdminActividadesCreateComponent } from '../../features/adminActividades/admin-actividades-create.component';
 import { ActividadDetailComponent }     from '../../features/actividades/actividad-detail.component';
 
+import { CrearUsuarioComponent } from '../../features/adminCrearUsuario/crear-usuario.component';
+
 import { TecnicoDashboardComponent }    from '../../features/tecnicoDashboard/tecnico-dashboard.component';
 import { TecnicoParcelasComponent }     from '../../features/tecnicoParcelas/tecnico-parcelas.component';
 import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
@@ -30,7 +32,7 @@ import { TecnicoCultivoCreateComponent } from '../../features/tecnicoCultivo/tec
 import { TecnicoCultivoDetalleComponent } from '../../features/cultivos/tecnico-cultivo-detalle.component';
 
 import { TecnicoActividadesComponent }  from '../../features/tecnicoActividades/tecnico-actividades.component';
-import { TecnicoActividadDetalleComponent } from '../../features/actividades/tecnico-actividad-detalle.component'; // <--- Import correcto
+import { TecnicoActividadDetalleComponent } from '../../features/actividades/tecnico-actividad-detalle.component';
 
 import { AuthGuard }  from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
@@ -118,6 +120,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard],
   },
   {
+    path: 'dashboard/admin/usuarios/create',
+    component: CrearUsuarioComponent,
+    canActivate: [AuthGuard, AdminGuard],
+  },
+  {
     path: 'dashboard/admin/usuarios/:id/edit',
     component: AdminUsuarioEditComponent,
     canActivate: [AuthGuard, AdminGuard],
@@ -163,7 +170,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard/tecnico/actividades/:id',
-    component: TecnicoActividadDetalleComponent, 
+    component: TecnicoActividadDetalleComponent,
     canActivate: [AuthGuard],
   },
 
