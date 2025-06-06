@@ -1,48 +1,88 @@
+<!-- src/app/features/auth/login/login.component.html -->
 <div
-  class="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10
-         flex items-center justify-center p-4"
+  class="relative min-h-screen bg-[#DCFCE7] flex items-center justify-center p-4 overflow-hidden"
 >
+  <!-- SVG de olas en el fondo -->
+  <div class="absolute bottom-0 left-0 w-full pointer-events-none select-none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 800 600"
+      class="w-full h-auto"
+      preserveAspectRatio="none"
+    >
+      <!-- Fondo aclarado (ya lo tenemos con bg-[#DCFCE7], así que puede omitirse o dejarse ligero) -->
+      <rect width="800" height="600" fill="#DCFCE7" />
+
+      <!-- Onda 1 (color primario #2F855A) -->
+      <path
+        d="M0,480 C100,460 200,500 300,480
+           S 500,500 600,480
+           S 700,500 800,480
+           V600 H0 Z"
+        fill="#2F855A"
+        fill-opacity="0.8"
+      ></path>
+
+      <!-- Onda 2 -->
+      <path
+        d="M0,520 C100,500 200,540 300,520
+           S 500,540 600,520
+           S 700,540 800,520
+           V560 H0 Z"
+        fill="#2F855A"
+        fill-opacity="0.6"
+      ></path>
+
+      <!-- Onda 3 -->
+      <path
+        d="M0,560 C100,540 200,580 300,560
+           S 500,580 600,560
+           S 700,580 800,560
+           V520 H0 Z"
+        fill="#2F855A"
+        fill-opacity="0.4"
+      ></path>
+    </svg>
+  </div>
+
+  <!-- Tarjeta blanca con formulario, encima del SVG -->
   <div
-    class="bg-white rounded-2xl shadow-2xl w-full max-w-md
-           border border-bg-main overflow-hidden relative"
+    class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md
+           border border-gray-200 overflow-hidden z-10"
   >
     <!-- Volver al Landing -->
     <a
       routerLink="/"
-      class="absolute top-4 left-4 flex items-center space-x-1 text-text-primary hover:text-primary transition"
+      class="absolute top-4 left-4 text-[#2F855A] hover:text-green-700 transition font-medium"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 19l-7-7 7-7" />
-      </svg>
-      <span>Volver</span>
+      Volver
     </a>
 
     <!-- Toast de error -->
     <div
       *ngIf="error"
-      class="absolute top-4 inset-x-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium animate-toast z-10"
+      class="absolute top-4 inset-x-4 bg-red-600 text-white px-4 py-2
+             rounded-lg shadow-lg text-sm font-medium animate-toast z-20"
     >
       {{ error }}
     </div>
 
     <!-- Logo -->
-    <div class="bg-primary/10 py-2 flex justify-center">
+    <div class="py-4 flex justify-center bg-transparent">
       <img src="/assets/LogoAgrogestor.png" alt="Agrogestor Logo" class="h-24 w-auto" />
     </div>
 
-    <!-- Título -->
+    <!-- Título y formulario -->
     <div class="p-8 space-y-6">
-      <h2 class="text-2xl font-bold text-primary text-center">Iniciar Sesión</h2>
-      <p class="text-center text-text-secondary">
+      <h2 class="text-2xl font-bold text-[#2F855A] text-center">Iniciar Sesión</h2>
+      <p class="text-center text-gray-600">
         Accede y gestiona tus parcelas al instante
       </p>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
-        <!-- Email -->
+        <!-- Correo -->
         <div>
-          <label for="correo" class="block text-sm font-medium text-text-primary">
+          <label for="correo" class="block text-sm font-medium text-gray-700">
             Correo electrónico
           </label>
           <input
@@ -50,8 +90,8 @@
             type="email"
             formControlName="correo"
             placeholder="ejemplo@correo.com"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    placeholder-gray-400 transition"
           />
           <div
@@ -61,15 +101,15 @@
             <div *ngIf="form.get('correo')?.errors?.['required']">
               El correo es obligatorio.
             </div>
-            <div *ngIf="form.get('correo')?.errors?.['correo']">
+            <div *ngIf="form.get('correo')?.errors?.['email']">
               Introduce un correo válido.
             </div>
           </div>
         </div>
 
-        <!-- Password -->
+        <!-- Contraseña -->
         <div>
-          <label for="contrasena" class="block text-sm font-medium text-text-primary">
+          <label for="contrasena" class="block text-sm font-medium text-gray-700">
             Contraseña
           </label>
           <input
@@ -77,8 +117,8 @@
             type="password"
             formControlName="contrasena"
             placeholder="********"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    placeholder-gray-400 transition"
           />
           <div
@@ -95,8 +135,8 @@
         <button
           type="submit"
           [disabled]="form.invalid || loading"
-          class="w-full flex items-center justify-center gap-2 py-3 bg-primary hover:bg-secondary text-white
-                 font-semibold rounded-lg transition disabled:opacity-50"
+          class="w-full flex items-center justify-center gap-2 py-3 bg-[#2F855A] hover:bg-green-700 text-white
+                 font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg
             *ngIf="loading"
@@ -117,11 +157,11 @@
       </form>
 
       <!-- Links secundarios -->
-      <div class="mt-4 flex justify-between text-sm text-text-secondary">
-        <a routerLink="/forgot-password" class="hover:underline text-primary">
+      <div class="mt-4 flex justify-between text-sm text-gray-600">
+        <a routerLink="/forgot-password" class="hover:underline text-[#2F855A]">
           ¿Olvidaste tu contraseña?
         </a>
-        <a routerLink="/register" class="hover:underline text-primary">
+        <a routerLink="/register" class="hover:underline text-[#2F855A]">
           Regístrate
         </a>
       </div>

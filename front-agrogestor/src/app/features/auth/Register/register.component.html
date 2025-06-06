@@ -1,35 +1,80 @@
+<!-- src/app/features/auth/register/register.component.html -->
 <div
-  class="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10
-         flex items-center justify-center p-4"
+  class="relative min-h-screen bg-[#DCFCE7] flex items-center justify-center p-4 overflow-hidden"
 >
+  <!-- SVG de olas en el fondo -->
+  <div class="absolute bottom-0 left-0 w-full pointer-events-none select-none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 800 600"
+      class="w-full h-auto"
+      preserveAspectRatio="none"
+    >
+      <!-- Fondo aclarado (opcional, el rect sirve si el color de fondo no funciona en algún navegador) -->
+      <rect width="800" height="600" fill="#DCFCE7" />
+
+      <!-- Onda 1 -->
+      <path
+        d="M0,480 C100,460 200,500 300,480
+           S 500,500 600,480
+           S 700,500 800,480
+           V600 H0 Z"
+        fill="#2F855A"
+        fill-opacity="0.8"
+      ></path>
+
+      <!-- Onda 2 -->
+      <path
+        d="M0,520 C100,500 200,540 300,520
+           S 500,540 600,520
+           S 700,540 800,520
+           V560 H0 Z"
+        fill="#2F855A"
+        fill-opacity="0.6"
+      ></path>
+
+      <!-- Onda 3 -->
+      <path
+        d="M0,560 C100,540 200,580 300,560
+           S 500,580 600,560
+           S 700,580 800,560
+           V520 H0 Z"
+        fill="#2F855A"
+        fill-opacity="0.4"
+      ></path>
+    </svg>
+  </div>
+
+  <!-- Tarjeta blanca -->
   <div
-    class="bg-white rounded-2xl shadow-2xl w-full max-w-md
-           border border-bg-main overflow-hidden relative"
+    class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md
+           border border-gray-200 overflow-hidden z-10"
   >
     <!-- Toast de error -->
     <div
       *ngIf="error"
-      class="absolute top-4 inset-x-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium animate-toast z-10"
+      class="absolute top-4 inset-x-4 bg-red-600 text-white px-4 py-2
+             rounded-lg shadow-lg text-sm font-medium animate-toast z-20"
     >
       {{ error }}
     </div>
 
     <!-- Logo -->
-    <div class="bg-primary/10 py-2 flex justify-center">
+    <div class="py-4 flex justify-center bg-transparent">
       <img src="/assets/LogoAgrogestor.png" alt="Agrogestor Logo" class="h-24 w-auto" />
     </div>
 
     <!-- Título y subtítulo -->
     <div class="p-8 space-y-6">
-      <h2 class="text-2xl font-bold text-primary text-center">Crear Cuenta</h2>
-      <p class="text-center text-text-secondary">
+      <h2 class="text-2xl font-bold text-[#2F855A] text-center">Crear Cuenta</h2>
+      <p class="text-center text-gray-600">
         Regístrate para empezar a gestionar tus parcelas
       </p>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
         <!-- Nombre -->
         <div>
-          <label for="nombre" class="block text-sm font-medium text-text-primary">
+          <label for="nombre" class="block text-sm font-medium text-gray-700">
             Nombre
           </label>
           <input
@@ -37,8 +82,8 @@
             type="text"
             formControlName="nombre"
             placeholder="Tu nombre"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    placeholder-gray-400 transition"
           />
           <div
@@ -51,7 +96,7 @@
 
         <!-- Apellidos -->
         <div>
-          <label for="apellidos" class="block text-sm font-medium text-text-primary">
+          <label for="apellidos" class="block text-sm font-medium text-gray-700">
             Apellidos
           </label>
           <input
@@ -59,8 +104,8 @@
             type="text"
             formControlName="apellidos"
             placeholder="Tus apellidos"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    placeholder-gray-400 transition"
           />
           <div
@@ -73,7 +118,7 @@
 
         <!-- Correo -->
         <div>
-          <label for="correo" class="block text-sm font-medium text-text-primary">
+          <label for="correo" class="block text-sm font-medium text-gray-700">
             Correo electrónico
           </label>
           <input
@@ -81,8 +126,8 @@
             type="email"
             formControlName="correo"
             placeholder="ejemplo@correo.com"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    placeholder-gray-400 transition"
           />
           <div
@@ -100,7 +145,7 @@
 
         <!-- Contraseña -->
         <div>
-          <label for="contrasena" class="block text-sm font-medium text-text-primary">
+          <label for="contrasena" class="block text-sm font-medium text-gray-700">
             Contraseña
           </label>
           <input
@@ -108,8 +153,8 @@
             type="password"
             formControlName="contrasena"
             placeholder="********"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    placeholder-gray-400 transition"
           />
           <div
@@ -122,14 +167,14 @@
 
         <!-- Rol -->
         <div>
-          <label for="rol" class="block text-sm font-medium text-text-primary">
+          <label for="rol" class="block text-sm font-medium text-gray-700">
             Rol
           </label>
           <select
             id="rol"
             formControlName="rol"
-            class="mt-1 w-full px-4 py-2 border-2 border-bg-main rounded-lg
-                   focus:border-primary focus:ring-2 focus:ring-primary
+            class="mt-1 w-full px-4 py-2 border-2 border-gray-300 rounded-lg
+                   focus:outline-none focus:border-[#2F855A] focus:ring-2 focus:ring-[#2F855A]
                    transition"
           >
             <option value="TECNICO_AGRICOLA">Técnico agrícola</option>
@@ -141,7 +186,7 @@
         <button
           type="submit"
           [disabled]="form.invalid || loading"
-          class="w-full flex items-center justify-center gap-2 py-3 bg-primary hover:bg-secondary text-white
+          class="w-full flex items-center justify-center gap-2 py-3 bg-[#2F855A] hover:bg-green-700 text-white
                  font-semibold rounded-lg transition disabled:opacity-50"
         >
           <svg
@@ -162,8 +207,8 @@
         </button>
       </form>
 
-      <div class="mt-4 text-center text-sm text-text-secondary">
-        <a routerLink="/login" class="hover:underline text-primary">
+      <div class="mt-4 text-center text-sm text-gray-600">
+        <a routerLink="/login" class="hover:underline text-[#2F855A] font-medium">
           ¿Ya tienes cuenta?
         </a>
       </div>

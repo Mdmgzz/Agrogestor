@@ -57,5 +57,5 @@ export class ForgotPasswordComponent implements OnInit {
         this.loading = false;
       },
     });
-  }
+  } 
 }

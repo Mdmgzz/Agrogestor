@@ -12,11 +12,9 @@ class Usuario extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuarios';
-    
-    public function getAuthPassword()
-    {
-        return $this->contrasena;
-    }
+
+    // Ya no hace falta este método:
+    // public function setContrasenaAttribute($value) { … }
 
     protected $fillable = [
         'nombre',
@@ -26,17 +24,13 @@ class Usuario extends Authenticatable
         'rol',
     ];
 
-    /**
-     * Hash de la contraseña al asignarla
-     */
-    public function setContrasenaAttribute($value)
+    public function getAuthPassword()
     {
-        $this->attributes['contrasena'] = bcrypt($value);
+        // Laravel buscará el password aquí para el guard:
+        return $this->contrasena;
     }
 
-    
-
-    // Relaciones...
+    // Relaciones…
     public function parcelas()    { return $this->hasMany(Parcela::class, 'usuario_id'); }
     public function actividades() { return $this->hasMany(Actividad::class, 'usuario_id'); }
 }
