@@ -3,8 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Auth;            
-use Illuminate\Auth\EloquentUserProvider;          
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\EloquentUserProvider;
+//use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,10 +16,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Ya no llamamos a registerPolicies() porque no existe aquí.
-        // $this->registerPolicies();
-
-        // Ahora sí podemos usar Auth::provider(...) sin que falle.
         Auth::provider('usuarios-custom', function($app, array $config) {
             return new class($app['hash'], $config['model']) extends EloquentUserProvider {
                 public function retrieveByCredentials(array $credentials)
@@ -31,5 +28,10 @@ class AppServiceProvider extends ServiceProvider
                 }
             };
         });
+
+    \Illuminate\Auth\Notifications\ResetPassword::createUrlUsing(function ($user, string $token) {
+        $frontend = env('FRONTEND_URL', 'http://localhost:4200');
+        return "{$frontend}/reset-password?token={$token}&email={$user->correo}";
+    });
     }
 }

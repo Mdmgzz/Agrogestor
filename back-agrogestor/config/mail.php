@@ -115,4 +115,23 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+        /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure your theme and component paths for Markdown mail
+    | rendering. Or, you may simply stick with the Laravel defaults!
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'default',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
+
 ];

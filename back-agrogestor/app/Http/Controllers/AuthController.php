@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -92,37 +93,65 @@ class AuthController extends Controller
         return response()->json(['message' => 'Sesión cerrada'], 200);
     }
 
-    public function sendResetLinkEmail(Request $req) {
-  $req->validate(['correo' => 'required|email|exists:usuarios,correo']);
-  $status = Password::sendResetLink(
-    $req->only('correo')
-  );
-  return $status === Password::RESET_LINK_SENT
-    ? response()->json(['message' => 'Link enviado'])
-    : response()->json(['message' => 'Error enviando link'], 500);
+public function sendResetLinkEmail(Request $request)
+{
+    // Validamos como antes, el front manda 'email'
+    $request->validate(['email' => 'required|email']);
+
+    // Llamamos al broker 'usuarios' y le pasamos 'correo' en lugar de 'email'
+    $status = Password::broker('usuarios')->sendResetLink([
+        'correo' => $request->input('email'),
+    ]);
+
+    // Log para depurar siempre el status
+    Log::info("Password reset status for {$request->input('email')}: {$status}");
+
+    if ($status === Password::RESET_LINK_SENT) {
+        return response()->json([
+            'message' => 'Te hemos enviado un enlace de restablecimiento a tu correo'
+        ], 200);
+    }
+
+    if ($status === Password::RESET_THROTTLED) {
+        return response()->json([
+            'message' => __($status),
+            'retry_after_seconds' => config('auth.passwords.usuarios.throttle', 60),
+        ], 429);
+    }
+
+    return response()->json(['message' => __($status)], 400);
 }
 
-public function resetPassword(Request $req) {
-  $req->validate([
-    'token'    => 'required',
-    'correo'   => 'required|email',
-    'contrasena' => 'required|min:6|confirmed',
-  ]);
-  $status = Password::reset(
-    [
-      'email'                 => $req->correo,
-      'password'              => $req->contrasena,
-      'password_confirmation' => $req->contrasena_confirmation,
-      'token'                 => $req->token,
-    ],
-    function ($user, $password) {
-      $user->contrasena = Hash::make($password);
-      $user->save();
+    public function resetPassword(Request $req)
+    {
+        // 1) validamos todos los campos
+        $req->validate([
+            'token'                 => 'required',
+            'email'                 => 'required|email|exists:usuarios,correo',
+            'contrasena'            => 'required|min:6|confirmed',
+        ]);
+
+        // 2) mapeamos de nuevo a 'correo' + resto de credenciales
+        $credentials = [
+            'correo'                 => $req->input('email'),
+            'password'               => $req->input('contrasena'),
+            'password_confirmation'  => $req->input('contrasena_confirmation'),
+            'token'                  => $req->input('token'),
+        ];
+
+        // 3) ejecutamos el reset
+        $status = Password::broker('usuarios')->reset(
+            $credentials,
+            function (Usuario $user, string $password) {
+                $user->contrasena = Hash::make($password);
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['message' => 'Contraseña restablecida'])
+            : response()->json(['message' => 'Error restableciendo'], 500);
     }
-  );
-  return $status === Password::PASSWORD_RESET
-    ? response()->json(['message' => 'Contraseña restablecida'])
-    : response()->json(['message' => 'Error restableciendo'], 500);
-}
+
 
 }

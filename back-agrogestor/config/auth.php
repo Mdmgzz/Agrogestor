@@ -13,8 +13,9 @@ return [
 
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'usuarios'),
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +52,7 @@ return [
     'providers' => [
 
         'usuarios' => [
-            'driver' => 'eloquent',
+            'driver' => 'usuarios-custom',
             'model'  => App\Models\Usuario::class,
         ],
     ],
@@ -63,6 +64,17 @@ return [
     */
 
     'passwords' => [
+
+        // Broker por defecto para usuarios
+        'usuarios' => [
+            'provider' => 'usuarios',
+            'table'    => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire'   => 60,
+            'throttle' => 60,
+        ],
+
+        // Mantenemos 'users' si tuvieras autenticación web clásica,
+        // o puedes eliminarlo si no lo usas.
         'users' => [
             'provider' => 'users',
             'table'    => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
@@ -70,6 +82,7 @@ return [
             'throttle' => 60,
         ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
