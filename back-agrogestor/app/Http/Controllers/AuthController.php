@@ -29,21 +29,15 @@ class AuthController extends Controller
         'rol'        => 'required|in:TECNICO_AGRICOLA,INSPECTOR',
     ]);
 
-    // DEBUG 1: log del payload
     \Log::info('Register payload: ' . json_encode($data));
 
-    // Intentamos crear el usuario dentro de un try/catch para capturar errores
     try {
         $newUser = Usuario::create($data);
-        // DEBUG 2: log del usuario creado
         \Log::info('New user created: ' . json_encode($newUser));
     } catch (\Exception $e) {
         \Log::error('Error creating user: ' . $e->getMessage());
         return response()->json(['message' => 'Error interno'], 500);
     }
-
-    // DEBUG 3: si quieres ver el objeto en Postman, descomenta dd():
-    // dd($newUser);
 
     $token = $newUser->createToken('api_token')->plainTextToken;
 

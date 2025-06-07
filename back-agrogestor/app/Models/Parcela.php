@@ -27,7 +27,7 @@ class Parcela extends Model
     // Agregar este método para que ->load('actividades') funcione
     public function actividades()
     {
-        // Ajusta el namespace y la clave foránea si tu modelo Actividad está en otra ruta/clase
+        // Ajusta el namespace y la FK si tu modelo Actividad está en otra ruta/clase
         return $this->hasMany(\App\Models\Actividad::class, 'parcela_id');
     }
 }

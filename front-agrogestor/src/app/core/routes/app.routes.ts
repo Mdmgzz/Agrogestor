@@ -3,38 +3,39 @@
 import { Routes } from '@angular/router';
 
 import { LandingComponent } from '../../features/landing/landing.component';
-import { LoginComponent }   from '../../features/auth/login/login.component';
+import { LoginComponent } from '../../features/auth/login/login.component';
 import { RegisterComponent } from '../../features/auth/Register/register.component';
 import { ForgotPasswordComponent } from '../../features/auth/ForgotPassword/forgot-password.component';
+import { ResetPasswordComponent } from '../../features/auth/resetPassword/reset-password.component';
 
-import { AdminDashboardComponent }  from '../../features/adminDashboard/admin-dashboard.component';
-import { AdminParcelasComponent }   from '../../features/adminParcelas/admin-parcelas.component';
+import { AdminDashboardComponent } from '../../features/adminDashboard/admin-dashboard.component';
+import { AdminParcelasComponent } from '../../features/adminParcelas/admin-parcelas.component';
 import { AdminParcelaCreateComponent } from '../../features/adminParcelas/admin-parcela-create.component';
 import { AdminParcelaDetalleComponent } from '../../features/parcelas/admin-parcela-detalle.component';
-import { AdminUsuariosComponent }   from '../../features/adminUsuarios/admin-usuarios.component';
+import { AdminUsuariosComponent } from '../../features/adminUsuarios/admin-usuarios.component';
 import { AdminUsuarioEditComponent } from '../../features/usuario/admin-usuario-edit.component';
-import { AdminCultivosComponent }   from '../../features/adminCultivos/admin-cultivos.component';
+import { AdminCultivosComponent } from '../../features/adminCultivos/admin-cultivos.component';
 import { AdminCultivoCreateComponent } from '../../features/adminCultivos/admin-cultivos-create.component';
 import { AdminCultivosDetalleComponent } from '../../features/cultivos/admin-cultivos-detalle.component';
-import { AdminActividadesComponent }    from '../../features/adminActividades/admin-actividades.component';
+import { AdminActividadesComponent } from '../../features/adminActividades/admin-actividades.component';
 import { AdminActividadesCreateComponent } from '../../features/adminActividades/admin-actividades-create.component';
-import { ActividadDetailComponent }     from '../../features/actividades/actividad-detail.component';
+import { ActividadDetailComponent } from '../../features/actividades/actividad-detail.component';
 
 import { CrearUsuarioComponent } from '../../features/adminCrearUsuario/crear-usuario.component';
 
-import { TecnicoDashboardComponent }    from '../../features/tecnicoDashboard/tecnico-dashboard.component';
-import { TecnicoParcelasComponent }     from '../../features/tecnicoParcelas/tecnico-parcelas.component';
+import { TecnicoDashboardComponent } from '../../features/tecnicoDashboard/tecnico-dashboard.component';
+import { TecnicoParcelasComponent } from '../../features/tecnicoParcelas/tecnico-parcelas.component';
 import { TecnicoParcelaCreateComponent } from '../../features/tecnicoParcelas/tecnico-parcela-create.component';
 import { TecnicoParcelaDetalleComponent } from '../../features/parcelas/tecnico-parcela-detalle.component';
 
-import { TecnicoCultivosComponent }     from '../../features/tecnicoCultivo/tecnico-cultivo.component';
+import { TecnicoCultivosComponent } from '../../features/tecnicoCultivo/tecnico-cultivo.component';
 import { TecnicoCultivoCreateComponent } from '../../features/tecnicoCultivo/tecnico-cultivo-create.component';
 import { TecnicoCultivoDetalleComponent } from '../../features/cultivos/tecnico-cultivo-detalle.component';
 
-import { TecnicoActividadesComponent }  from '../../features/tecnicoActividades/tecnico-actividades.component';
+import { TecnicoActividadesComponent } from '../../features/tecnicoActividades/tecnico-actividades.component';
 import { TecnicoActividadDetalleComponent } from '../../features/actividades/tecnico-actividad-detalle.component';
 
-import { AuthGuard }  from '../services/auth.guard';
+import { AuthGuard } from '../services/auth.guard';
 import { AdminGuard } from '../services/admin.guard';
 
 export const routes: Routes = [
@@ -44,6 +45,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
 
   // Admin Dashboard
   {

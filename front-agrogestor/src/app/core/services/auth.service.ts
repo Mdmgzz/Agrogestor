@@ -1,13 +1,12 @@
 // src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { tap, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+// Ajustamos los payloads para el reset de contraseña:
 export interface LoginPayload { correo: string; contrasena: string; }
 export interface AuthResponse { user: any; token: string; }
-export interface User { id: number; name: string; correo: string; }
-
 export interface Usuario {
   id: number;
   nombre: string;
@@ -16,32 +15,39 @@ export interface Usuario {
   rol: 'ADMINISTRADOR' | 'TECNICO_AGRICOLA' | 'INSPECTOR';
 }
 
+// Nuevo interface para forgot/reset password
+export interface ForgotPasswordPayload {
+  email: string;
+}
+export interface ResetPasswordPayload {
+  token: string;
+  email: string;
+  contrasena: string;
+  contrasena_confirmation: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  login(data: { correo: string; contrasena: string }) {
-  return this.http
-    .post<{ user: Usuario; token: string }>(
-      `${this.base}/api/login`,
-      data
-    )
-    .pipe(
-      tap(res => {
-        localStorage.setItem('token', res.token);
-      })
-    );
-}
-  
-
- logout(): Observable<{ message: string }> {
+  login(data: LoginPayload) {
     return this.http
-      .post<{ message: string }>(
-        `${this.base}/api/logout`,
-        {}
+      .post<{ user: Usuario; token: string }>(
+        `${this.base}/api/login`,
+        data
       )
+      .pipe(
+        tap(res => {
+          localStorage.setItem('token', res.token);
+        })
+      );
+  }
+
+  logout(): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(`${this.base}/api/logout`, {})
       .pipe(
         tap(() => {
           localStorage.removeItem('token');
@@ -54,7 +60,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('api_token');
+    return localStorage.getItem('token');
   }
 
   register(data: {
@@ -66,29 +72,32 @@ export class AuthService {
   }) {
     return this.http
       .post<{ user: any; token: string }>(
-        // <— aquí apuntamos al mismo backend que el login:
         `${this.base}/api/register`,
         data
       )
       .pipe(tap(res => localStorage.setItem('token', res.token)));
   }
 
- forgotPassword(data: { correo: string }) {
+  // ---------------------------------------------------------------
+  // Forgot & reset password
+  // ---------------------------------------------------------------
+
+  forgotPassword(data: ForgotPasswordPayload) {
     return this.http.post<{ message: string }>(
       `${this.base}/api/password/email`,
       data
     );
   }
 
-  resetPassword(data: {
-    token: string;
-    correo: string;
-    contrasena: string;
-    password_confirmation: string;
-  }) {
+  resetPassword(data: ResetPasswordPayload) {
     return this.http.post<{ message: string }>(
       `${this.base}/api/password/reset`,
-      data
+      {
+        token: data.token,
+        email: data.email,
+        contrasena: data.contrasena,
+        contrasena_confirmation: data.contrasena_confirmation
+      }
     );
   }
 }
