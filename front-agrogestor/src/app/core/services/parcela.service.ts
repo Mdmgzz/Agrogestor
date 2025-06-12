@@ -30,6 +30,7 @@ export interface Parcela {
     id: number;
     parcela_id: number;
     nombre: string;
+    variedad: string;
     fecha_inicio: string;
     superficie_ha: number;
     latitud?: number;

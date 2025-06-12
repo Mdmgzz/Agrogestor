@@ -6,15 +6,25 @@ import { FormsModule }                          from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CultivoService, Cultivo }              from '../../core/services/cultivo.service';
 
-// Ajustamos Parcela dentro de CultivoConParcela para incluir usuario_id,
-// de acuerdo a la definición de ParcelaMin en el servicio.
-interface CultivoConParcela extends Cultivo {
-  parcela: {
-    id: number;
-    nombre: string;
-    propietario: string;
-    usuario_id: number;
-  };
+// Usuario mínimo que viene en parcela.usuario
+interface UsuarioMin {
+  id: number;
+  nombre: string;
+  apellidos: string;
+}
+
+// Parcela con el propietario y la relación usuario
+interface ParcelaConUsuario {
+  id: number;
+  nombre: string;
+  propietario: string;
+  usuario_id: number;
+  usuario?: UsuarioMin;
+}
+
+// Cultivo enriquecido con esa parcela
+export interface CultivoConParcela extends Cultivo {
+  parcela: ParcelaConUsuario;
 }
 
 @Component({
@@ -26,14 +36,12 @@ interface CultivoConParcela extends Cultivo {
 export class AdminCultivosComponent implements OnInit {
   parcelaId?: number;
   cultivosAll: CultivoConParcela[] = [];
-  // Para agrupación
-  groupKeys: string[] = [];
-  grouped: Record<string, CultivoConParcela[]> = {};
+  groupKeys:   string[]                         = [];
+  grouped:     Record<string, CultivoConParcela[]> = {};
 
   loading = true;
-  error:    string | null = null;
+  error:   string | null = null;
 
-  // filtros
   searchTerm = '';
   startDate  = '';
   endDate    = '';
@@ -52,16 +60,14 @@ export class AdminCultivosComponent implements OnInit {
 
     this.svc.getAll().subscribe({
       next: data => {
-        // Solo incluir cultivos de la parcela si existe parámetro id
         this.cultivosAll = (data as CultivoConParcela[]).filter(
           c => this.parcelaId == null || c.parcela_id === this.parcelaId
         );
-
         this.processGrouping();
         this.loading = false;
       },
       error: () => {
-        this.error = 'No se pudieron cargar los cultivos';
+        this.error   = 'No se pudieron cargar los cultivos';
         this.loading = false;
       }
     });
@@ -72,19 +78,26 @@ export class AdminCultivosComponent implements OnInit {
   }
 
   private processGrouping() {
-    // Primero aplicamos filtros
+    // 1) filtrado
     const term = this.searchTerm.trim().toLowerCase();
     const filtered = this.cultivosAll.filter(c => {
-      if (term && !c.variedad.toLowerCase().includes(term)) return false;
-      if (this.startDate && c.fecha_siembra < this.startDate) return false;
-      if (this.endDate && c.fecha_siembra > this.endDate) return false;
+      if (term && !c.variedad.toLowerCase().includes(term))       return false;
+      if (this.startDate && c.fecha_siembra < this.startDate)      return false;
+      if (this.endDate   && c.fecha_siembra > this.endDate)        return false;
       return true;
     });
 
-    // Agrupamos por "Parcela — Propietario"
+    // 2) agrupamos: USER — PARCELA — PROPIETARIO
     const groups: Record<string, CultivoConParcela[]> = {};
+
     for (const c of filtered) {
-      const key = `${c.parcela.nombre} — ${c.parcela.propietario}`;
+      const userName = c.parcela.usuario
+        ? `${c.parcela.usuario.nombre} ${c.parcela.usuario.apellidos}`
+        : 'Sin usuario';
+      const parcelName = c.parcela.nombre;
+      const ownerName = c.parcela.propietario;
+
+      const key = `${userName} — ${parcelName} — ${ownerName}`;
       (groups[key] ??= []).push(c);
     }
 
@@ -94,7 +107,12 @@ export class AdminCultivosComponent implements OnInit {
 
   crearCultivo() {
     if (this.parcelaId != null) {
-      this.router.navigate(['/dashboard/admin/parcelas', this.parcelaId, 'cultivos', 'create']);
+      this.router.navigate([
+        '/dashboard/admin/parcelas',
+        this.parcelaId,
+        'cultivos',
+        'create'
+      ]);
     } else {
       this.router.navigate(['/dashboard/admin/cultivos/create']);
     }

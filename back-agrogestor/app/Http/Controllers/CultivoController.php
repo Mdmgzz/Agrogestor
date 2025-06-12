@@ -11,21 +11,25 @@ class CultivoController extends Controller
      * GET /api/cultivos
      * - ADMINISTRADOR e INSPECTOR pueden ver todos los cultivos.
      * - TECNICO_AGRICOLA ve solo los cultivos de sus propias parcelas.
+     * 
+     * Siempre cargamos la relación parcela.usuario para que el front
+     * pueda mostrar el nombre completo del propietario.
      */
     public function index(Request $request)
     {
         $user = $request->user();
 
+        // Base query con relación anidada
+        $query = Cultivo::with('parcela.usuario');
+
+        // Si es técnico, filtramos sus propias parcelas
         if ($user->rol === 'TECNICO_AGRICOLA') {
-            return Cultivo::with('parcela')
-                ->whereHas('parcela', function($q) use ($user) {
-                    $q->where('usuario_id', $user->id);
-                })
-                ->get();
+            $query->whereHas('parcela', function($q) use ($user) {
+                $q->where('usuario_id', $user->id);
+            });
         }
 
-        // ADMINISTRADOR e INSPECTOR ven todo
-        return Cultivo::with('parcela')->get();
+        return $query->get();
     }
 
     /**
@@ -52,27 +56,28 @@ class CultivoController extends Controller
             'longitud'      => 'nullable|numeric',
         ];
 
-        // Si lo crea un ADMINISTRADOR, le permitimos enviar también "usuario_id"
         if ($user->rol === 'ADMINISTRADOR') {
-            $rules['usuario_id'] = 'required|exists:users,id';
+            $rules['usuario_id'] = 'required|exists:usuarios,id';
         }
 
         $data = $request->validate($rules);
 
         if ($user->rol === 'TECNICO_AGRICOLA') {
-            // Para un técnico, forzamos que el cultivo se asocie a sí mismo
             $data['usuario_id'] = $user->id;
 
-            // Verificamos que la parcela pertenece a este técnico
             $pertenece = $user->parcelas()
                 ->where('id', $data['parcela_id'])
                 ->exists();
+
             if (! $pertenece) {
                 abort(403, 'No puedes crear cultivos en parcelas ajenas.');
             }
         }
 
-        return Cultivo::create($data);
+        $cultivo = Cultivo::create($data);
+
+        // Devolvemos con relación cargada
+        return $cultivo->load('parcela.usuario');
     }
 
     /**
@@ -84,17 +89,18 @@ class CultivoController extends Controller
     {
         $user = $request->user();
 
-        if ($user->rol === 'TECNICO_AGRICOLA' && $cultivo->parcela->usuario_id !== $user->id) {
+        if ($user->rol === 'TECNICO_AGRICOLA' 
+            && $cultivo->parcela->usuario_id !== $user->id) {
             abort(403, 'No tienes permiso para ver este cultivo.');
         }
 
-        return $cultivo->load('parcela');
+        return $cultivo->load('parcela.usuario');
     }
 
     /**
      * PUT /api/cultivos/{cultivo}
-     * - ADMINISTRADOR puede actualizar cualquier cultivo (incluyendo reasignar usuario_id).
-     * - TECNICO_AGRICOLA solo puede actualizar cultivos de sus parcelas, 
+     * - ADMINISTRADOR puede actualizar cualquier cultivo.
+     * - TECNICO_AGRICOLA solo puede actualizar cultivos de sus parcelas,
      *   pero no puede cambiar el usuario_id.
      * - INSPECTOR no puede actualizar.
      */
@@ -106,7 +112,8 @@ class CultivoController extends Controller
             abort(403, 'No tienes permiso para editar cultivos.');
         }
 
-        if ($user->rol === 'TECNICO_AGRICOLA' && $cultivo->parcela->usuario_id !== $user->id) {
+        if ($user->rol === 'TECNICO_AGRICOLA' 
+            && $cultivo->parcela->usuario_id !== $user->id) {
             abort(403, 'No tienes permiso para editar este cultivo.');
         }
 
@@ -119,20 +126,19 @@ class CultivoController extends Controller
             'longitud'      => 'sometimes|nullable|numeric',
         ];
 
-        // Solo el ADMINISTRADOR puede reasignar el usuario que “posee” este cultivo:
         if ($user->rol === 'ADMINISTRADOR') {
-            $rules['usuario_id'] = 'sometimes|required|exists:users,id';
+            $rules['usuario_id'] = 'sometimes|required|exists:usuarios,id';
         }
 
         $data = $request->validate($rules);
 
-        // Si es técnico, forzamos que usuario_id no cambie (o no lo pasamos en $data)
         if ($user->rol === 'TECNICO_AGRICOLA') {
             unset($data['usuario_id']);
         }
 
         $cultivo->update($data);
-        return $cultivo;
+
+        return $cultivo->load('parcela.usuario');
     }
 
     /**
@@ -149,11 +155,13 @@ class CultivoController extends Controller
             abort(403, 'No tienes permiso para borrar cultivos.');
         }
 
-        if ($user->rol === 'TECNICO_AGRICOLA' && $cultivo->parcela->usuario_id !== $user->id) {
+        if ($user->rol === 'TECNICO_AGRICOLA' 
+            && $cultivo->parcela->usuario_id !== $user->id) {
             abort(403, 'No tienes permiso para borrar este cultivo.');
         }
 
         $cultivo->delete();
+
         return response()->noContent();
     }
 }

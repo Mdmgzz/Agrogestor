@@ -197,7 +197,7 @@ export class AdminCultivoCreateComponent implements OnInit, AfterViewInit {
 
     // 6) Prepara el payload incluyendo el usuario_id
     const payload: any = {
-      usuario_id:    this.selectedUsuario.id, // <-- AÑADE usuario_id en el payload
+      usuario_id:    this.selectedUsuario.id, 
       parcela_id:    this.selectedParcelaId,
       variedad:      this.variedad,
       fecha_siembra: this.fechaSiembra,
